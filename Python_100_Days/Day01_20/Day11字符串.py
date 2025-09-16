@@ -325,7 +325,7 @@ print(words)
 print('~'.join(words)) # I~love~you
 words = s.split(' ',1) # ['I', 'love you'] 以空格拆分字符串，最多拆分1次
 
-编码与解码
+# 编码与解码
 a = '你好世界'
 b = a.encode('utf-8')
 c = a.encode('gbk')
