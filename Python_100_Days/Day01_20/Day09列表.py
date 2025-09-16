@@ -1,3 +1,5 @@
+# Day 09 列表
+
 # 添加元素
 languages = ['Java', 'C', 'C++', 'Python']
 languages.append('JavaScript')
