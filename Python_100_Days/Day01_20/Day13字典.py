@@ -55,7 +55,7 @@ print(person1)          # {'name': '李雷', 'age': 22, 'height': 168, 'weight':
 # 作用：删除指定key对应的键值对
 # 返回：被删除key的值
 # 注意：键不存在则抛KeyError
-person1 = {'name': '李雷', 'age': 22, 'height': 168, 'weight': 60}
+person = {'name': '李雷', 'age': 22, 'height': 168, 'weight': 60}
 print(person.pop('age'))  # 返回22，字典中移除'age'键值对
 
 # popitem()
