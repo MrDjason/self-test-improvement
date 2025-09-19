@@ -1,8 +1,8 @@
 import datetime
 import time
-from apscheduler.schedulers.blocking import BlockingScheduler
+import datetime
 
-from pytodo.models import Task
+from models.task import Task
 
 # ==================== 创建任务 ====================
 
@@ -16,6 +16,7 @@ def add_task():
     title = input("请输入任务标题：")
     description = input("请输入任务描述：")
     due_date = input("请输入任务截止日期（格式：YYYY-MM-DD）：")
+    due_time = input("请输入任务截止时间（格式：HH:MM）：")
 
     # 生成当前日期作为创建时间（格式统一）
 
@@ -29,48 +30,57 @@ def add_task():
         print("错误：截止日期格式无效，请重新输入（示例：2024-12-31）")
         return
     
+    # 验证截止时间格式
+    try:
+        datetime.datetime.strptime(due_time, "%H:%M")
+    except ValueError:
+        print("错误：截止时间格式无效，请重新输入（示例：14:30）")
+        return
+    
     # 创建 Task 对象并保存
 
-    new_task = Task(title, description, due_date, created_at)
+    new_task = Task(title, description, due_date, due_time, created_at)
     save_task_to_file(new_task)
     print(f"任务创建成功：{new_task}")
+    
+
 
 # ==================== 保存任务到文件 ====================
 
-def save_task_to_file(task, filepath="../tasks.txt"):
+def save_task_to_file(task, filepath="task.txt"):
     """
     将单个任务追加保存到文本文件
     :param task: Task 对象
-    :param filepath: 任务存储文件路径（默认 tasks.txt）
+    :param filepath: 任务存储文件路径（默认 task.txt）
     """
     try:
         with open(filepath, "a", encoding="utf-8") as file:
 
             # 按格式写入字段（completed 转换为字符串便于存储）
 
-            file.write(f"{task.title}, {task.description}, {task.due_date}, {task.created_at}, {str(task.completed)}\n")
+            file.write(f"{task.title}, {task.description}, {task.due_date}, {task.due_time}, {task.created_at}, {str(task.completed)}\n")
     except Exception as e:
         print(f"保存任务失败：{e}")
 
-def save_all_tasks(tasks, filepath="../tasks.txt"):
+def save_all_tasks(tasks, filepath="task.txt"):
     """
     覆盖保存所有任务到文件（用于编辑/删除后更新全量任务）
     :param tasks: Task 对象列表
-    :param filepath: 任务存储文件路径（默认 tasks.txt）
+    :param filepath: 任务存储文件路径（默认 task.txt）
     """
     try:
         with open(filepath, "w", encoding="utf-8") as file:
             for task in tasks:
-                file.write(f"{task.title}, {task.description}, {task.due_date}, {task.created_at}, {str(task.completed)}\n")
+                file.write(f"{task.title}, {task.description}, {task.due_date}, {task.due_time}, {task.created_at}, {str(task.completed)}\n")
     except Exception as e:
         print(f"全量保存任务失败：{e}")
 # =================================================================================
-def load_tasks_from_file(file_path="../tasks.txt"):
+def load_tasks_from_file(file_path="task.txt"):
     """
     从任务存储文件中读取数据，还原为Task实例列表
     
     参数：
-        file_path: 任务文件路径，默认是文档中约定的"tasks.txt"
+        file_path: 任务文件路径，默认是pytodo文件夹内的"task.txt"
     返回：
         list[Task]: 包含所有任务的Task实例列表；若文件不存在/读取失败，返回空列表
     异常处理：
@@ -90,31 +100,45 @@ def load_tasks_from_file(file_path="../tasks.txt"):
                     continue
 
                 # 3. 解析行数据（按文档约定的"逗号+空格"分割字段）
-                # 文档中存储格式示例："Task 1, Complete project, 2023-04-10, 2023-04-01, False"
-                fields = line.split(", ")  # 分割后得到5个字段的列表
+                fields = line.split(", ")  # 分割后得到字段列表
 
-                # 4. 校验字段数量（必须为5个，否则格式错误）
-                if len(fields) != 5:
-                    print(f"警告：第{line_num}行数据格式错误（字段数量不足），已跳过该行")
+                # 4. 校验字段数量（支持新旧格式兼容）
+                if len(fields) == 6:
+                    # 新格式：包含due_time字段
+                    title = fields[0]
+                    description = fields[1]
+                    due_date = fields[2]
+                    due_time = fields[3]
+                    created_at = fields[4]
+                    # 完成状态：将字符串"True"/"False"转为布尔值（兼容大小写）
+                    completed_str = fields[5].strip().lower()
+                    if completed_str not in ["true", "false"]:
+                        print(f"警告：第{line_num}行'完成状态'值非法（需为True/False），已跳过该行")
+                        continue
+                    completed = (completed_str == "true")  # 转为布尔值
+                elif len(fields) == 5:
+                    # 旧格式：不包含due_time字段，设为默认值
+                    title = fields[0]
+                    description = fields[1]
+                    due_date = fields[2]
+                    due_time = "23:59"  # 默认截止时间设为当天结束
+                    created_at = fields[3]
+                    # 完成状态：将字符串"True"/"False"转为布尔值（兼容大小写）
+                    completed_str = fields[4].strip().lower()
+                    if completed_str not in ["true", "false"]:
+                        print(f"警告：第{line_num}行'完成状态'值非法（需为True/False），已跳过该行")
+                        continue
+                    completed = (completed_str == "true")  # 转为布尔值
+                else:
+                    print(f"警告：第{line_num}行数据格式错误（字段数量不符），已跳过该行")
                     continue
-
-                # 5. 提取字段并转换数据类型
-                title = fields[0]
-                description = fields[1]
-                due_date = fields[2]
-                created_at = fields[3]
-                # 完成状态：将字符串"True"/"False"转为布尔值（兼容大小写，如"true"/"TRUE"）
-                completed_str = fields[4].strip().lower()
-                if completed_str not in ["true", "false"]:
-                    print(f"警告：第{line_num}行'完成状态'值非法（需为True/False），已跳过该行")
-                    continue
-                completed = (completed_str == "true")  # 转为布尔值
 
                 # 6. 创建Task实例并添加到列表
                 task = Task(
                     title=title,
                     description=description,
                     due_date=due_date,
+                    due_time=due_time,
                     created_at=created_at,
                     completed=completed
                 )
@@ -138,7 +162,7 @@ def load_tasks_from_file(file_path="../tasks.txt"):
 # 编辑任务
 
 def edit_task():
-    """通过序号（索引）编辑任务"""
+    """通过序号编辑任务（序号从1开始）"""
     # 1. 加载所有任务并检查是否为空
     tasks = load_tasks_from_file()
     if not tasks:
@@ -147,29 +171,30 @@ def edit_task():
 
     # 2. 显示所有任务及序号（方便用户选择）
     print("\n===== 所有任务 =====")
-    for idx, task in enumerate(tasks):  # idx 就是序号（从0开始）
-        print(f"序号 {idx}：{task}")  # 显示序号+任务信息
+    for idx, task in enumerate(tasks):
+        print(f"序号 {idx + 1}：{task}")  # 显示序号（从1开始）+任务信息
     print("===================")
 
     # 3. 让用户输入要编辑的序号
     try:
         task_idx = int(input("请输入要编辑的任务序号："))
-        # 验证序号有效性（必须在0到任务数量-1之间）
-        if not (0 <= task_idx < len(tasks)):
-            print(f"错误：序号必须在 0 到 {len(tasks)-1} 之间")
+        # 验证序号有效性（必须在1到任务数量之间）
+        if not (1 <= task_idx <= len(tasks)):
+            print(f"错误：序号必须在 1 到 {len(tasks)} 之间")
             return
     except ValueError:
         print("错误：请输入有效的数字序号")
         return
 
-    # 4. 获取要编辑的任务对象
-    task = tasks[task_idx]
+    # 4. 获取要编辑的任务对象（用户输入序号减1得到实际索引）
+    task = tasks[task_idx - 1]
     print(f"\n当前编辑的任务：{task}")
 
     # 5. 交互修改任务属性（支持保留原内容，直接回车不修改）
     new_title = input(f"请输入新标题（原：{task.title}）：")
     new_description = input(f"请输入新描述（原：{task.description}）：")
     new_due_date = input(f"请输入新截止日期（原：{task.due_date}，格式YYYY-MM-DD）：")
+    new_due_time = input(f"请输入新截止时间（原：{task.due_time}，格式HH:MM）：")
     new_completed = input(f"请输入完成状态（原：{task.completed}，输入True/False）：")
 
     # 6. 更新属性（只更新用户输入了内容的字段）
@@ -184,6 +209,13 @@ def edit_task():
             task.due_date = new_due_date
         except ValueError:
             print("警告：截止日期格式无效，未更新")
+    # 验证并更新截止时间
+    if new_due_time:
+        try:
+            datetime.datetime.strptime(new_due_time, "%H:%M")
+            task.due_time = new_due_time
+        except ValueError:
+            print("警告：截止时间格式无效，未更新")
     # 验证并更新完成状态
     if new_completed:
         new_completed = new_completed.lower()
@@ -262,10 +294,10 @@ def view_tasks():
     # 4. 显示处理后的任务（带序号，方便后续编辑）
     print("\n===== 任务列表 =====")
     for idx, task in enumerate(sorted_tasks):
-        print(f"序号 {idx}：{task}")
+        print(f"序号 {idx + 1}：{task}")  # 序号从1开始
     print("===================")
     print(f"提示：当前显示{get_filter_desc(filter_by)}，按{get_sort_desc(sort_by)}排序")
-    print(f"编辑任务时，请使用以上序号")
+    print(f"编辑、标记完成或删除任务时，请使用以上序号（从1开始）")
 
 # 辅助函数：获取过滤条件的描述文字（用于显示提示）
 def get_filter_desc(filter_by):
@@ -302,20 +334,20 @@ def complete_task():
     
     print("\n===== 可标记完成的任务（未完成） =====")
     for idx, task in enumerate(sorted_tasks):
-        print(f"序号 {idx}：{task}")
+        print(f"序号 {idx + 1}：{task}")  # 序号从1开始
     print("=====================================")
 
     try:
         task_idx = int(input("请输入要标记完成的任务序号："))
-        if not (0 <= task_idx < len(sorted_tasks)):
-            print(f"错误：序号必须在 0 到 {len(sorted_tasks)-1} 之间")
+        if not (1 <= task_idx <= len(sorted_tasks)):
+            print(f"错误：序号必须在 1 到 {len(sorted_tasks)} 之间")
             return
     except ValueError:
         print("错误：请输入有效的数字序号")
         return
 
-    # 标记为完成并保存
-    task = sorted_tasks[task_idx]
+    # 标记为完成并保存（用户输入序号减1得到实际索引）
+    task = sorted_tasks[task_idx - 1]
     task.completed = True
     # 保存全量任务（注意：需要更新原始任务列表，而非过滤后的列表）
     # 找到原始任务在全量列表中的位置并更新
@@ -326,4 +358,43 @@ def complete_task():
     save_all_tasks(tasks)
     print(f"任务已标记为完成：{task}")
 
-# ==================== 系统提醒 ====================
+# ==================== 删除任务 ====================
+
+def delete_task():
+    """通过序号删除任务"""
+    tasks = load_tasks_from_file()
+    if not tasks:
+        print("当前没有任务可删除")
+        return
+
+    # 显示所有任务
+    print("\n===== 所有任务 =====")
+    for idx, task in enumerate(tasks):
+        print(f"序号 {idx + 1}：{task}")  # 序号从1开始
+    print("===================")
+
+    try:
+        task_idx = int(input("请输入要删除的任务序号："))
+        if not (1 <= task_idx <= len(tasks)):
+            print(f"错误：序号必须在 1 到 {len(tasks)} 之间")
+            return
+    except ValueError:
+        print("错误：请输入有效的数字序号")
+        return
+
+    # 获取要删除的任务（用户输入序号减1得到实际索引）
+    task_idx -= 1
+    deleted_task = tasks[task_idx]
+    
+    # 再次确认删除操作
+    confirm = input(f"确定要删除任务 '{deleted_task.title}' 吗？(y/n)：").lower().strip()
+    if confirm != 'y':
+        print("已取消删除操作")
+        return
+    
+    # 从任务列表中删除
+    tasks.pop(task_idx)
+    
+    # 保存更新后的任务列表
+    save_all_tasks(tasks)
+    print(f"任务已成功删除：{deleted_task.title}")
