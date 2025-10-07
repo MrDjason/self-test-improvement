@@ -53,7 +53,7 @@ class Poker:
     def __init__(self):
         self.cards = [Card(suite, face)
                       for suite in Suite
-                      for face in range(1,14)] # 生成52张牌的列表
+                      for face in range(1,14)] # 生成52个类的列表
         self.current = 0 # 记录发牌位置属性 表示[从第0张牌开始发牌，列表索引从0开始]
 
     def shuffle(self):
