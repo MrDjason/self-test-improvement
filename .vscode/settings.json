@@ -1,10 +1,21 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:conda",
-    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    // 虚拟环境核心配置
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python-envs.defaultPackageManager": "ms-python.python:pip",
     "python-envs.pythonProjects": [],
-    // 配置python语言正常输出中文的环境
+    // 指定虚拟环境解释器路径（关键：指向项目内的.venv）
+    "python.defaultInterpreterPath": ".venv\\Scripts\\python.exe",
+    // 终端打开时自动激活虚拟环境（核心自动激活配置）
+    "python.terminal.activateEnvironment": true,
+    // 运行代码时在终端中使用选定的解释器（确保运行环境一致）
+    "python.runInterpreterInTerminal": true,
+
+    // 保留你原有的中文输出配置
     "code-runner.executorMap": {
         "python": "set PYTHONIOENCODING=utf8 && python"
     },
-    "python.REPL.enableREPLSmartSend": false
+    "python.REPL.enableREPLSmartSend": false,
+
+    // 补充：确保调试时也使用虚拟环境（可选但推荐）
+    "python.debugger.runInTerminal": true
 }

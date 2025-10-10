@@ -1,6 +1,6 @@
  class Player():
     '''玩家'''
-    def __init__(self, name):
+    def __init__(self, name, point=0):
         '''初始化玩家'''
         self.name = name
         self.cards = []
