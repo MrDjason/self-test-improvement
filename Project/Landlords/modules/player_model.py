@@ -1,4 +1,4 @@
- class Player():
+class Player():
     '''玩家'''
     def __init__(self, name):
         '''初始化玩家'''
