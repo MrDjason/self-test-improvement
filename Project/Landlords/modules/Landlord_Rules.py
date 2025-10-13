@@ -1,45 +1,13 @@
 # ==================== 导入模块 ====================
 import random
 from enum import Enum
-# ==================== 定 义 类 ====================
-from enum import Enum
 from typing import List, Tuple, Optional
 
-class Suite(Enum):
-    SPADE, HEART, CLUB, DIAMOND, JOKER = range(5)
-
-class Card:
-    def __init__(self, suite, face):
-        self.suite = suite
-        self.face = face
-    
-    def __lt__(self, other):
-        if self.suite == Suite.JOKER:
-            if self.face == 1:
-                return False
-            else:
-                return other.suite == Suite.JOKER and other.face == 1
-        if other.suite == Suite.JOKER:
-            return True
-        
-        face_order = {2:15, 1:14, 13:13, 12:12, 11:11, 10:10, 9:9, 8:8, 7:7, 6:6, 5:5, 4:4, 3:3}
-        suite_order = {Suite.SPADE:4, Suite.HEART:3, Suite.CLUB:2, Suite.DIAMOND:1}
-        
-        if face_order[self.face] != face_order[other.face]:
-            return face_order[self.face] < face_order[other.face]
-        else:
-            return suite_order[self.suite] < suite_order[other.suite]
-    
-    def __repr__(self):
-        suites = '♠♥♣♦🃏'
-        if self.suite == Suite.JOKER:
-            return '🃏大王' if self.face == 1 else '🃏小王'
-        faces = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-        return f'{suites[self.suite.value]}{faces[self.face]}'
-
+# 导入扑克模型中的类
+from modules.poker_model import Suite, Card
 
 class LandlordRules:
-    """斗地主出牌规则类（含6带2、6带4、4带2）"""
+    """斗地主出牌规则类"""
     
     class CardType(Enum):
         """更新后的牌型枚举"""
@@ -51,14 +19,17 @@ class LandlordRules:
         STRAIGHT_PAIR = 5  # 连对(3+对子连续)
         TRIPLE_WITH_SINGLE = 6  # 三带一
         TRIPLE_WITH_PAIR = 7    # 三带二
-        BOMB = 8      # 炸弹(4张相同)
-        ROYAL_BOMB = 9  # 王炸(大小王)
-        SIX_WITH_TWO = 10  # 6带2（2组3张+2张单牌或1对）
-        SIX_WITH_FOUR = 11  # 6带4（2组3张+2对对子）
-        FOUR_WITH_TWO = 12  # 4带2（炸弹+2张单牌或1对）
-    
+        SIX_WITH_TWO = 8  # 6带2（2组3张+2张单牌或1对）
+        SIX_WITH_FOUR = 9  # 6带4（2组3张+2对对子）
+        FOUR_WITH_TWO = 10  # 4带2（炸弹+2张单牌或1对）
+        BOMB = 11      # 炸弹(4张相同)
+        ROYAL_BOMB = 12  # 王炸(大小王)
+
     @staticmethod
+    # @staticmethod 装饰器
+    # 不需要创建类的实例，直接通过类名.方法名()调用,
     def get_face_counts(cards: List[Card]) -> dict:
+    # cards: List[Card] 给传入参数做类型注解，表示是cards是列表，并且传入的元素都是Card对象
         """统计每张点数的出现次数（排除大小王）"""
         face_counts = {}
         for card in cards:
@@ -182,12 +153,15 @@ class LandlordRules:
     @staticmethod
     def can_beat(prev_cards: List[Card], curr_cards: List[Card]) -> bool:
         """判断当前牌能否压过上一手牌"""
+        # 如果没有上一手牌，则只需要判断当前牌是否有效
         if not prev_cards:
             return LandlordRules.is_valid_play(curr_cards)
         
+        # 获取牌型信息
         prev_type, prev_key, prev_max = LandlordRules.get_card_type(prev_cards)
         curr_type, curr_key, curr_max = LandlordRules.get_card_type(curr_cards)
         
+        # 检查牌型是否有效
         if prev_type == LandlordRules.CardType.INVALID or curr_type == LandlordRules.CardType.INVALID:
             return False
         
@@ -220,42 +194,91 @@ class LandlordRules:
             if prev_key != curr_key:
                 return False
         
-        # 6带2/6带4/4带2比较主牌最大点数
-        if prev_type in [LandlordRules.CardType.SIX_WITH_TWO, 
-                         LandlordRules.CardType.SIX_WITH_FOUR,
-                         LandlordRules.CardType.FOUR_WITH_TWO]:
+        # 6带2/6带4比较主牌最大点数
+        if prev_type in [LandlordRules.CardType.SIX_WITH_TWO, LandlordRules.CardType.SIX_WITH_FOUR]:
             return curr_key > prev_key
         
         # 其他牌型比较最大牌
         return curr_max > prev_max
-
-
-# 测试新牌型
-if __name__ == "__main__":
-    # 6带2测试（2组3张+1对）
-    c3 = [Card(Suite.SPADE, 3)]*3  # 333
-    c4 = [Card(Suite.HEART, 4)]*3  # 444
-    pair5 = [Card(Suite.CLUB, 5)]*2  # 55（附属牌）
-    six_with_two = c3 + c4 + pair5  # 333444+55（8张）
-    print("6带2（333444+55）判断：", LandlordRules.get_card_type(six_with_two)[0])  # 应返回SIX_WITH_TWO
-    
-    # 6带4测试（2组3张+2对）
-    pair6 = [Card(Suite.DIAMOND, 6)]*2  # 66
-    six_with_four = c3 + c4 + pair5 + pair6  # 333444+55+66（10张）
-    print("6带4（333444+55+66）判断：", LandlordRules.get_card_type(six_with_four)[0])  # 应返回SIX_WITH_FOUR
-    
-    # 4带2测试（炸弹+2单）
-    bomb3 = [Card(Suite.SPADE, 3)]*4  # 3333
-    single5 = [Card(Suite.CLUB, 5), Card(Suite.DIAMOND, 6)]  # 5、6（单牌）
-    four_with_two_1 = bomb3 + single5  # 3333+5+6（6张）
-    print("4带2（3333+5+6）判断：", LandlordRules.get_card_type(four_with_two_1)[0])  # 应返回FOUR_WITH_TWO
-    
-    # 4带2测试（炸弹+1对）
-    pair7 = [Card(Suite.HEART, 7)]*2  # 77
-    four_with_two_2 = bomb3 + pair7  # 3333+77（6张）
-    print("4带2（3333+77）判断：", LandlordRules.get_card_type(four_with_two_2)[0])  # 应返回FOUR_WITH_TWO
-    
-    # 压制测试
-    bomb4 = [Card(Suite.SPADE, 4)]*4  # 4444
-    stronger_four_with_two = bomb4 + pair7  # 4444+77
-    print("4带2压制测试：", LandlordRules.can_beat(four_with_two_2, stronger_four_with_two))  # 应返回True
+        
+    @staticmethod
+    def get_card_type_name(card_type: 'LandlordRules.CardType') -> str:
+        """获取牌型的中文名称"""
+        type_names = {
+            LandlordRules.CardType.SINGLE: "单张",
+            LandlordRules.CardType.PAIR: "对子",
+            LandlordRules.CardType.TRIPLE: "三张",
+            LandlordRules.CardType.STRAIGHT: "顺子",
+            LandlordRules.CardType.STRAIGHT_PAIR: "连对",
+            LandlordRules.CardType.TRIPLE_WITH_SINGLE: "三带一",
+            LandlordRules.CardType.TRIPLE_WITH_PAIR: "三带二",
+            LandlordRules.CardType.SIX_WITH_TWO: "6带2",
+            LandlordRules.CardType.SIX_WITH_FOUR: "6带4",
+            LandlordRules.CardType.FOUR_WITH_TWO: "4带2",
+            LandlordRules.CardType.BOMB: "炸弹",
+            LandlordRules.CardType.ROYAL_BOMB: "王炸",
+            LandlordRules.CardType.INVALID: "无效牌型"
+        }
+        return type_names.get(card_type, "未知牌型")
+        
+    @staticmethod
+    def get_available_moves(player_cards: List[Card], last_cards: List[Card] = None) -> List[List[Card]]:
+        """获取玩家当前可以出的所有有效牌型"""
+        available_moves = []
+        
+        # 如果没有上一手牌，则所有有效牌型都可以出
+        if not last_cards:
+            # 这里实现一个简化版：返回所有可能的有效单牌、对子、三张
+            # 在实际游戏中可以实现更复杂的组合
+            
+            # 获取所有单牌
+            for i in range(len(player_cards)):
+                single_card = [player_cards[i]]
+                if LandlordRules.is_valid_play(single_card):
+                    available_moves.append(single_card)
+            
+            # 获取所有对子
+            for i in range(len(player_cards)):
+                for j in range(i + 1, len(player_cards)):
+                    pair = [player_cards[i], player_cards[j]]
+                    if LandlordRules.is_valid_play(pair):
+                        available_moves.append(pair)
+            
+            # 获取所有三张
+            for i in range(len(player_cards)):
+                for j in range(i + 1, len(player_cards)):
+                    for k in range(j + 1, len(player_cards)):
+                        triple = [player_cards[i], player_cards[j], player_cards[k]]
+                        if LandlordRules.is_valid_play(triple):
+                            available_moves.append(triple)
+        else:
+            # 有上一手牌时，需要能压过才能出
+            # 为了简化，这里只返回所有可能的炸弹
+            # 检查是否有王炸
+            jokers = [card for card in player_cards if card.suite == Suite.JOKER]
+            if len(jokers) == 2:
+                royal_bomb = jokers
+                if LandlordRules.can_beat(last_cards, royal_bomb):
+                    available_moves.append(royal_bomb)
+            
+            # 检查是否有普通炸弹
+            face_counts = {}  # 统计每个点数出现的次数
+            for card in player_cards:
+                if card.suite != Suite.JOKER:  # 排除大小王
+                    key = card.face
+                    face_counts[key] = face_counts.get(key, []) + [card]
+            
+            for face, cards in face_counts.items():
+                if len(cards) >= 4:
+                    bomb = cards[:4]  # 取前4张作为炸弹
+                    if LandlordRules.can_beat(last_cards, bomb):
+                        available_moves.append(bomb)
+        
+        # 去重并返回结果
+        # 由于列表无法直接哈希，这里采用一种简单的去重方式
+        unique_moves = []
+        for move in available_moves:
+            if move not in unique_moves:
+                unique_moves.append(move)
+        
+        return unique_moves
