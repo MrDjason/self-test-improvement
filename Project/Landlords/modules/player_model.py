@@ -1,4 +1,4 @@
- class Player():
+class Player():
     '''玩家'''
     def __init__(self, name, point=0):
         '''初始化玩家'''
@@ -11,4 +11,4 @@
     
     def arrange(self):
         '''整理'''
-        self.cards.sort()
+        self.cards.sort(reverse=True)
