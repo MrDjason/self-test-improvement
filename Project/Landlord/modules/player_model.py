@@ -13,4 +13,4 @@ class Player():
 
     def arrange(self):
     # 整理
-        self.cards.sort(reversed=True)
+        self.cards.sort(reverse=True)

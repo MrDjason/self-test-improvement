@@ -131,14 +131,23 @@ employees = [
 for emp_dict in employees:
     doc = Document(file_path + '/离职证明模板.docx')
     for p in doc.paragraphs:
+    # 遍历文档中的每一个段落p
+    # docx中paragraphs属性返回文档所有段落的列表
         if '{' not in p.text:
+        # 检查段落文本中是否包含{（占位符的起始标识），不包含则跳过
             continue
         for run in p.runs:
+        # runs 是Paragraph对象的一个属性，返回一个列表，包含该段落中所有的 “文本片段（Run）”
+        # .text 是 run 对象的一个属性，用于获取或修改这个文本片段的实际文字内容。
             if '{' not in run.text:
                 continue
 
             start, end = run.text.find('{'), run.text.find('}')
-            key, place_holder = run.text[start+1:end], run.text[start:end+1]
-            run.text = run.text.replace(place_holder, emp_dict[key])
+            key, place_holder = run.text[start+1:end], run.text[start:end+1] # 获取占位符作为查询的key
+            # key = name /department | place_holder = {name} / {department}
+            run.text = run.text.replace(place_holder, emp_dict[key]) 
+            # 查询并获取字典中key对应的value值，替换place_holder获取到的占位符
 
     doc.save(f'{emp_dict["name"]}离职证明.docx')
+
+# PPT略

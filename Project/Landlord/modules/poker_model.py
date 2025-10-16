@@ -38,7 +38,7 @@ class Card():
         suites = '♠♥♣♦🃏'
         faces = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         if self.suite == Suite.JOKER:
-            if self.face == '0':
+            if self.face == 0:
                 return '🃏小王'
             else:
                 return '🃏大王'
@@ -47,11 +47,11 @@ class Card():
     
 class Poker():
     def __init__(self):
-        self.cards = [Card(suite,face) 
+        self.cards = [Card(suite, face) 
                  for suite in [Suite.SPADE, Suite.HEART, Suite.CLUB, Suite.DIAMOND]
                  for face in range(1,14)]
-        self.append(Card(Suite.JOKER, 1))
-        self.append(Card(Suite.JOKER, 0))
+        self.cards.append(Card(Suite.JOKER, 0))
+        self.cards.append(Card(Suite.JOKER, 1))
         self.current = 0
 
     def deal(self):
