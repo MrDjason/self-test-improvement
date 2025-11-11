@@ -1,5 +1,6 @@
 # ==================== 导入模块 ====================
 import torch
+import random
 import matplotlib.pyplot as plt
 # ==================== 3.2.1 生成数据集 ====================
 # 根据有噪声的线性模型构造一个人造数据集，需要使用有限样本数据集恢复模型参数
@@ -31,4 +32,18 @@ plt.ylabel('Label (y)', fontsize=12)       # y轴标签
 plt.title('Scatter Plot: Feature 2 vs Label', fontsize=14)  # 标题
 plt.grid(alpha=0.3)  # 添加网格（增强可读性）
 plt.show()  # 显示图表
+
 # ==================== 3.2.2 读取数据集 ====================
+def data_iter(batch_size, features, labels):
+    num_examples = len(features)
+    indices = list(range(num_examples))
+    random.shuffle(indices)
+    for i in range(0, num_examples, batch_size):
+        batch_indices = torch.tensor(
+            indices[i: min(i+batch_size, num_examples)])
+        yield features[batch_indices], labels[batch_indices]
+batch_size = 10
+
+for X, y in data_iter(batch_size, features, labels):
+    print(X, '\n', y)
+    break
