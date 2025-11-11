@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第五节</title>
+    <style>
+        table{
+            border-collapse:collapse
+        }
+        td{
+            width: 120px;
+            height:30px;
+        }
+    </style>
+</head>
+<body>
+<!-- 表格主要有三个标签构成 table表、tr：table row表格行、td：table dock表格单元格 -->
+    <table border="1">
+    <!-- tr*3>td*4 -->
+    <!-- 关系：table>tr>td -->
+    <!-- 表头：用th设定表头可以加粗一行 -->
+        <tr>
+            <th>第一行第一列</th>
+            <th>第一行第二列</th>
+            <th>第一行第三列</th>
+            <th>第一行第四列</th>
+        </tr>
+            <tr>
+            <td>第二行第一列</td>
+            <td>第二行第二列</td>
+            <td>第二行第三列</td>
+            <td>第二行第四列</td>
+        </tr>
+                <tr>
+            <td>第三行第一列</td>
+            <td>第三行第二列</td>
+            <td>第三行第三列</td>
+            <td>第三行第四列</td>
+        </tr>
+    </table>
+    <!-- 单元格合并：rowspan上下跨行合并 colspan左右跨列合并 -->
+    <table border="1" style="border-collapse: collapse;">
+        <tr>
+            <td colspan="2">1</td>
+            <td rowspan="2">2</td>
+            <td colspan="3">3</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td rowspan="2">5</td>
+            <td>6</td>
+            <td>7</td>
+            <td>8</td>
+            <td rowspan="2">9</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td rowspan="2">11</td>
+            <td>12</td>
+            <td colspan="2">13</td>
+            <td rowspan="2">14</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>16</td>
+            <td>17</td>
+            <td colspan="2">18</td>
+        </tr>
+    </table>
+    
+    <!-- 表格分区 -->
+    <!-- 一个完整的表格包括：表格标题、表格表头、表格主题 -->
+    <!-- 一个表格还有三个分区标签组成 -->
+    <!-- caption：表格的标题 thead：表格的头部，嵌套tr→th tbody：表格的主题，嵌套tr→td -->
+    <table border="1" style="border-collapse: collapse;">
+        <!-- 主题分区 -->
+        <caption>各地区资产投资情况</caption>
+        <!-- 表头分区 -->
+        <thead>
+            <tr>            
+                <th rowspan="2">地区</th>
+                <th colspan="2">按总量分</th>
+                <th colspan="2">按比重分</th>
+            </tr>
+            <tr>
+                <td>自年初累计（亿元）</td>
+                <td>去年同期增长（%）</td>
+                <td>自年初累计（%）</td>
+                <td>去年同期（%）</td>
+            </tr>
+        </thead>
+        <!-- 主体分区 -->
+        <tbody>
+            <tr>
+                <td>全国</td>
+                <td>234234</td>
+                <td>9.8</td>
+                <td>100</td>
+                <td>100</td>
+            </tr>
+                        <tr>
+                <td>全国</td>
+                <td>234234</td>
+                <td>9.8</td>
+                <td>100</td>
+                <td>100</td>
+            </tr>
+                        <tr>
+                <td>全国</td>
+                <td>234234</td>
+                <td>9.8</td>
+                <td>100</td>
+                <td>100</td>
+            </tr>
+                        <tr>
+                <td>全国</td>
+                <td>234234</td>
+                <td>9.8</td>
+                <td>100</td>
+                <td>100</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
