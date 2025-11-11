@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第四节</title>
+</head>
+<body>
+    <!-- 无序列表 -->
+    <!--
+    ul:ulordered list 无序列表
+    li:list item 列表项
+    -->
+    <h2>四大名著</h2>
+    <ul>
+        <li>
+            <h3>三国演义</h3>
+            <ul>
+                <li>刘备</li>
+                <li>关羽</li>
+                <li>张飞</li>
+                <li>诸葛亮</li>
+            </ul>
+        </li>
+
+        <li>
+            <h3>西游记</h3>
+            <ul>
+                <li>唐僧</li>
+                <li>孙悟空</li>
+                <li>猪八戒</li>
+                <li>沙和尚</li>
+            </ul>
+        </li>
+
+        <li>
+            <h3>红楼梦</h3>
+            <ul>
+                <li>贾宝玉</li>
+                <li>林黛玉</li>
+                <li>薛宝钗</li>
+                <li>刘姥姥</li>
+            </ul>
+        </li>
+
+        <li>
+            <h3>水浒传</h3>
+            <ul>
+                <li>宋江</li>
+                <li>武松</li>
+                <li>林冲</li>
+                <li>卢俊义</li>
+            </ul>
+        </li>
+    </ul>
+    <!-- ul标签只能嵌套li【其他标签都不能嵌套】，li里面能嵌套任何标签，li里面可以再嵌套ul -->
+    <!-- 无序列表没有先后顺序之分 -->
+    <!-- 列表项之前的前缀样式由CSS去控制，目前只负责结构的搭建就可以了 -->
+
+
+    <h2>排名情况</h2>
+    <ol>
+        <li>
+            <h3>三年级一班</h3>
+            <ol>
+                <li>张同学</li>
+                <li>王同学</li>
+                <li>李同学</li>
+            </ol>        
+        </li>
+        <li>
+            <h3>三年级二班</h3>
+            <ol>
+                <li>蒋同学</li>
+                <li>林同学</li>
+                <li>方同学</li>
+            </ol>
+        </li>
+        <li>
+            <h3>三年级三班</h3>
+            <ol>
+                <li>毛同学</li>
+                <li>由同学</li>
+                <li>梁同学</li>
+            </ol>
+        </li>
+    </ol>
+    <!-- ol标签只能嵌套li【其他标签都不能嵌套】，li里面能嵌套任何标签，li里面可以再嵌套ol -->
+    <!-- ul出现在重复的列表中，如多个推送的新闻。ol用在排行榜之类的列表中-->
+    <dl>
+        <dt>杨幂</dt>
+        <dd>作品：1，2，3</dd>
+        <dt>赵丽颖</dt>
+        <dd>作品：1，2，3</dd>
+        <dt>刘诗诗</dt>
+        <dd>作品：1，2，3</dd>
+    </dl>
+
+    <!-- 定义列表 -->
+    <!--
+    作用：定义一个标题和内容自定义的列表结构
+    有三个标签构成：dl、dt、dd
+    dl英文:definitionlist表示创建一个自定义列表结构
+    dt英文:definitionterm定义主题或者定义术语,表示一个列表的主题
+    dd英文:definitiondescription定义解释项,表示解释和说明前面的主题内容
+    dl内只能存放dt和dd，dt和dd同级，他们都是【容器级标签】。可以看作dt定义→dd解释，一个dt可以对应多个dd
+    -->
+</body>
+</html>

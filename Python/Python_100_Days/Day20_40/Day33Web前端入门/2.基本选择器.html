@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="width=device=width" content="initial-scale=1.0">
+        <style type="text/css">
+            i{
+                color: blue;
+            }
+            .class1{
+                color: red
+            }
+            #myid{
+                color: green;
+            }
+
+
+            div{
+                border: 10px red solid;
+            }
+            span{
+                border: 10px green solid;
+            }
+            div>h3{
+                color : blue;
+            }
+            span>h3{
+                color: red;
+            }
+        </style>
+        <!-- 基本选择器 1. 元素选择器 通过<i></i>且令其颜色为blue -->
+        <!-- 基本选择器 2. 类选择器 通过在内联定义类，在head里面引用.class{}令其颜色为green -->
+        <!-- 基本选择器 3. id选择器 通过定位唯一一个元素 不同标签可使用相同id，人为控制id唯一 -->
+        <!-- 优先级 id选择器 > class选择器 > 元素选择器 -->
+        <!-- div>h3 子代选择器  > 符号表示 “直接子元素” 关系，强调层级的直接性 -->
+        <!-- span>h3 选择所有直接作为 <span> 元素子元素的 <h3> 元素，并对其应用样式 -->
+        <title>第二节</title>
+    </head>
+    <body>
+        <h1>我是<i>一个</i>标题</h1>
+        <h2 class="class1">我是一个标题</h2>
+        <h2>我是一个标题</h2>
+        <h2 class="class1">我是一个标题</h2>
+        <h2>我是一个标题</h2>
+        <h2 id="myid">我是一个标题</h2>
+        <!-- div 块级元素 -->
+        <!-- span 行内元素 -->
+        <div>div 基本选择器</div>
+        <div>div 基本选择器</div>
+        <span>span 基本选择器</span>
+        <span>span 基本选择器</span>
+        <div>
+            <h3>我是一个标题</h3>
+            <h3>我是一个标题</h3>
+            <h3>我是一个标题</h3>
+            <span>
+                <h3>我是一个标题</h3>
+                <h3>我是一个标题</h3>
+                <h3>我是一个标题</h3>
+                <!-- div、span、span下面标题 分别为父、子、孙关系 -->
+                <!-- div为后代选择器，只要这个元素的后代都发生改变 -->
+            </span>
+        </div>
+    </body>
+</html>
