@@ -38,7 +38,35 @@ print(x.grad)  # tensor([1., 1., 1., 1.])
 
 # ==================== 2.5.2 非标量变量的反向传播 ====================
 # 当y不是标量，向量y关于向量x的导数为一个矩阵。高阶和高维y、x，求导结果是一个高阶张量
-x.grad.zeros_()    # 梯度清零 
-y = x*x            # 得到向量输出
+x.grad.zero_()     # 梯度清零 
+y = x*x            # x = torch.arange(4.0)，得到向量输出 
 y.sum().backward() # 将y求和，自动算梯度并储存到grad中
-print(x.grad)
+# pytorch 只支持对标量求和，所以将y求和后再反向传播
+print(x.grad)      # tensor([0., 2., 4., 6.])
+
+# ==================== 2.5.3 分离计算 ====================
+# 固定部分计算（比如预训练模型的输出），只让梯度更新另一部分参数；
+# 避免不必要的梯度计算（节省内存 / 算力）；
+# 解决梯度回传混乱
+x = torch.tensor([1., 2., 3., 4.], requires_grad=True)
+y = x * x  # 计算图：x → y（y依赖x）
+u = y.detach()  # 分离y，u和y数值相同，但梯度不回传x
+z = u * x  # 计算图：x → z（u是常数，不参与梯度回传）
+z.sum().backward()  # 求z对x的梯度
+
+print(x.grad)  # 结果是u（即[1.,4.,9.,16.]），而非3x²
+# ==================== 2.5.4 Python控制流的梯度计算 ====================
+# PyTorch自动微分支持Python 控制流（如if、while、任意函数调用等）场景下的梯度计算 
+def f(a):
+    b = a * 2
+    while b.norm()< 1000: # x.norm() 关于标量，为绝对值范数，关于高维张量，默认所有元素进行2范数计算
+        b = b * 2
+    if b.sum() > 0:
+        c = b
+    else:
+        c = 100 * b
+    return c
+a = torch.randn(size=(), requires_grad=True)
+d = f(a)
+d.backward()
+print(a.grad== d/a)
