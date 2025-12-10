@@ -18,7 +18,7 @@ class MNISTDataset(Dataset):
             # 从当前指针位置读取，直到遇到换行符\n为止
             for line in f:
                 line = line.rstrip('\n') # 去除末尾换行符
-                items =  line.split(',') # 按,分割每行数据，得到字符串列表
+                items = line.split(',') # 按,分割每行数据，得到字符串列表
                 images.append([float(x) for x in items[1:]]) # 第二列以后的数转浮点数添加到images
                 labels.append(int(items[0])) # 第一列转整数添加到labels
         return images, labels
