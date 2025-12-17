@@ -127,3 +127,23 @@ git checkout 文件名 # 用暂存区 / 版本库的文件覆盖工作区的修�
 ```
 
 # Git远程仓库
+- 复制仓库 
+```
+git clone 仓库名 
+# 同时下载到本地已经有.git文件，不需要执行git init
+# 必须到相关目录下执行git命令
+```
+- 关联远程仓库
+```
+git remote add origin https://github.com/名字/仓库.git
+git remote -v # 验证关联成功
+```
+
+- 推送到远程仓库
+```
+git push # 将仓库区全部存储到Github
+git push -u origin main 
+# 将本地main分支的所有代码上传到远程origin仓库的main分支，同时让Git记住
+```
+- `-u`：-u是--set-upstream的缩写，核心作用是建立本地ubuntu分支↔远程 origin/ubuntu分支的追踪关系
+- `origin`：Git自动把冗长的仓库URL简化成了origin这个短名字
