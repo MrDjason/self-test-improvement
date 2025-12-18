@@ -1,21 +1,21 @@
 from django.db import models
 
-# Create your models here.
-'''
-1.模型类需要继承自models.Model
-    models.Model 会解析子类中定义的字段，将其转换为数据库表的列
-    如果不继承 models.Model，其属性只是普通类属性，Django完全无法识别这是数据库列定义，更不会生成对应的表结构
-
-2.系统会自动为我们添加一个主键id
-3.字段
-    字段名=model.类型（选项）
-    字段名其实就是数据表的字段名
-    字段名不要使用python、mysql等关键字
-'''
 class BookInfo(models.Model):
     # 创建字段，字段类型...
     # id已创建
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, unique=True)
+    pub_date = models.DateField(null=True)
+    readcount = models.IntegerField(default=0)
+    commentcount = models.IntegerField(default=0)
+    is_delete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+    # Meta是模型的 “配置项”，专门用来定制模型的非字段相关规则。
+        db_table = 'bookinfo' # 修改表的名字
+        verbose_name = '书籍管理' # admin站点使用
 
 class PeopleInfo(models.Model):
     name = models.CharField(max_length=10)
