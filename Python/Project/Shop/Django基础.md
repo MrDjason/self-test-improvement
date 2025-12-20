@@ -443,6 +443,479 @@ Heme Douy
 
 ## 2.8配置文件和静态文件
 
+## 2.8.1配置文件
+
+### 1.BASE_DIR
+
+```python
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))
+```
+
+当前工程的根目录，Django会依此来定位工程内的相关文件，也可以使用该参数来构造文件路径
+
+### 2.DEBUG
+
+调试模式，创建工程后初始值为True，即默认工作在调试模式下  
+作用：
+
+- 修改代码文件，程序自动重启
+- Django程序出现异常时，向前端显示详细的错误追踪信息
+部署在线上运行的Django要求：
+
+```python
+# BookManager/settings.py
+DEBUG=FALSE
+ALLOWER_HOSTS = ['*'] # 以任何方式登录
+```
+
+### 3.本地语言与时区
+
+Django支持本地化处理，即显示语言与失去支持本地化  
+初始化的工程默认语言和时区为英语和UTC标准时区
+
+```python
+LANGUAGE_CODE = 'en-us' # 语言
+TIME_ZONE = 'UTC' # 时区
+```
+
+将语言和时区修改为中国大陆信息
+
+```python
+LANGUAGE_CODE = 'zh-hans'
+TIME_ZONE = 'Asia/Shanghai'
+```
+
+### 2.8.2静态文件
+
+项目中的CSS、图片、js都是静态文件，一般会将静态文件放到一个单独的目录中，以方便管理。在html页面中调用时，也需要指定静态文件的路，Django中提供了一种解所的方式配置静态文件路径，静态文件可以放在项目根目录下，也可以放在应用的目录下，由于有些静态文件在项目中是通用的，所以推荐放在项目的根目录下，方便管理。  
+为了提供静态文件，需要配置两个参数：
+
+- **STATICFILES_DIRS**存放查找静态文件的目录
+- **STATIC_URL**访问静态文件的URL前缀  
+
+#### 示例
+
+1）在项目根目录下创建`static`目录来保存静态文件。  
+2）在`bookmanager/settings.py`中修改静态文件的两个参数为  
+
+```python
+# 网页中继目录
+STATIC_URL = '/static/'
+
+# 告诉系统图片在哪里
+STATICFILES_DIRS = [
+  os.path.join(BASE_DIR, 'static'),
+]
+```
+
+3）此时在static添加的任何静态文件都可以使用网址 **/static/文件在static中的路径** 来访问了。  
+例如，向static目录中添加一个index.html文件，在浏览器中就可以使用`127.0.0.1:8000/static/index.html`来访问。  
+或者我们在static目录中添加了一个子目录和文件book/detail.html,在浏览器中就可以使用
+
+### 2.8.3App应用配置
+
+在每个应用目录中都包含了apps.py文件，用于保存该应用的相关信息。  
+在创建应用时，Django会向apps.py文件中写入一个该应用的配置类，如
+
+```python
+from django.apps import AppConfig
+
+class BookConfig(AppConfig):
+  name = 'book'
+  verbose_name = '图书管理'
+```
+
+我们将此类添加到工程settings.py中的INSTALLED_APPS列表中，表名该应用已被注册并纳入Django工程的管理范围
+
+- AppConfig.name属性表示这个配置类时加载到哪个应用的。每个配置必须包含唯一指定name，不可省略或重复
+- AppConfig.verbose_name属性用于设置该应用的直观可读的名字，此名字在Django的管理后台、自动化文档等可视化场景中显示，替代纯英文的应用名
+
 ## 3.模型
+
+### 3.1重点
+
+- **1.模型配置**
+- **2.数据的增删改**
+  - 增：`book = Bookinfo() book.save()`和`Bookinfo.objects.create()`
+  - 删：`book.delete()`和`BookInfo.objects.get().delete()`
+  - 改：`book.name='xxx'、book.save()`和`BookInfo.objects.get().upedate(name=xxxx)`
+- **3.数据的查询**
+  - 基础查询
+  - F对象和Q对象
+
+### 3.2项目准备
+
+<details>
+
+<summary>
+点击查看详细内容
+</summary>
+
+#### 1.创建项目
+
+```bash
+django-admin startproject bookmanager
+```
+
+#### 2.创建应用
+
+```bash
+python manage.py startapp book
+```
+
+#### 3.更换python解释器
+
+```bash
+# 进入指定虚拟环境
+which python
+```
+
+#### 4.安装应用
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # 添加子应用
+    'book.apps.BookConfig',
+]
+```
+
+#### 5.定义数据模型
+
+在子应用book的models.py中定义数据模型，用于映射数据库表
+
+```python
+class BookInfo(models.Model):
+    # 创建字段，字段类型...
+    # id已创建
+    name = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+class PeopleInfo(models.Model):
+    name = models.CharField(max_length=10)
+    gender = models.BooleanField()
+    # 外键约束：人物属于哪本书
+    book = models.ForeignKey(BookInfo,on_delete=models.CASCADE)
+```
+
+#### 6.模型迁移
+
+将定义的模型转换为数据库表
+
+- 1.生成迁移文件，执行后会在`book/migrations`目录下生成迁移文件
+
+```bash
+python manage.py makemigrations
+```
+
+- 2.执行迁移（创建数据库表）
+
+```bash
+python manage.py migrate
+```
+
+#### 7.配置后台管理
+
+在后台管理界面中管理数据，需要注册模型
+
+- 1.在`book/admin.py`中注册模型
+
+```python
+from django.contrib import admin
+from book.models import BookInfo, PeopleInfo
+
+# 注册模型类
+admin.site.register(BookInfo)
+admin.site.register(PeopleInfo)
+```
+
+- 2.创建超级管理员
+
+```bash
+python manage.py createsuperuser
+```
+
+按照提示输入用户名、邮箱、密码
+
+- 3.启动开发服务器，访问后台
+
+```bash
+python manage.py runserver 8000 # 8000为服务器端口号
+```
+
+打开浏览器访问`http://127.0.0.1:8000/admin`，使用超级管理员账号登录，即可看到注册的书籍信息模型，可在其中添加/编辑/删除书籍数据。
+
+#### 8.定义视图
+
+在`./book/views.py`中定义视图函数，处理用户请求
+在`./templates/Book/index.html`存在
+
+```python
+from django.shortcuts import render
+from django.http import HttpRequest
+from django.http import HttpResponse
+
+# 我们期望用输入http://127.0.0.1:8000/index/访问视图函数
+def index(request):
+  # 准备上下文：定义在字典中的[测试数据]
+  context={'title':'测试模板处理数据'}
+  # 将上下文交给模板中进行处理，处理后视图响应给客户端
+  # render(request, template_name, context=None)
+  return render(request, 'Book/index.html', context=context)
+```
+
+#### 9.配置URL路由
+
+需要配置项目级和应用级两级URL
+
+- 1.应用级URL（`book/urls.py`手动创建）
+
+```python
+# book/urls.py
+from django.urls import path
+from book.views import index
+
+urlpatterns = [
+    path('index/', index)
+]
+```
+
+- 2.项目级URL（`bookmanager/urls.py`）
+
+```python
+# bookmanager/urls.py
+from django.contrib import admin
+from django.urls import path, include
+from book.views import index
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    # 包含子应用的URL，访问子应用路由时空路径开头可替换任意字符
+    path('', include('book.urls')),
+]
+```
+
+#### 10.创建模板
+
+用于展示页面  
+
+- 1.在项目根目录创建templates文件夹（存放所有模板），并在其中创建与子应用同名的文件夹book（避免模板名冲突）。  
+- 2.创建书籍列表模板book_list.html
+
+```html
+<!-- templates/book/book_list.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>书籍列表</title>
+</head>
+<body>
+    <h1>书籍列表</h1>
+    <ul>
+        <!-- 遍历视图传递的books数据 -->
+        {% for book in books %}
+            <li>
+                {{ book.title }} - 发布日期：{{ book.pub_date }} - 阅读量：{{ book.read_count }}
+            </li>
+        {% empty %}
+            <li>暂无书籍数据</li>  <!-- 当books为空时显示 -->
+        {% endfor %}
+    </ul>
+</body>
+</html>
+```
+
+- 3.配置模板路径  
+在bookmanager/settings.py的TEMPLATES中设置DIRS：
+
+```python
+# bookmanager/settings.py
+import os
+TEMPLATES = [
+    {
+        # ... 其他配置 ...
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # 添加模板根目录
+        # ... 其他配置 ...
+    },
+]
+```
+
+</details>
+
+### 3.3配置
+
+在settings.py中保存了数据库的连接配置信息，Django默认初始配置使用sqlite数据库
+
+```python
+DATABASES = {
+  'default':{
+  'ENGINE': 'django.db.backends.sqlite3',
+  'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+  }
+}
+```
+
+#### 1.在MySQL中创建数据库
+
+```bash
+create database book charset=utf8mb4;
+```
+
+#### 2.修改DATABASES配置信息
+
+```python
+DATABASES = {
+  'default':{
+    'ENGINE':'django.db.backends.mysql',
+    'HOST':'127.0.0.1', # 数据库主机
+    'PORT':3306,        # 数据库端口
+    'USER':'root',      # 数据库用户名
+    'PASSWORD':'mysql', # 数据库用户密码
+    'NAME':'book'       # 数据库名字
+  }
+}
+```
+
+#### 3.运行测试
+
+发现错误
+
+- 虚拟环境中没有安装MySQL数据库的客户端驱动  
+- 安装mysqlclient
+- **步骤 1**：安装gcc编译器+Python3开发库
+
+```bash
+sudo apt install -y gcc python3-dev
+```
+
+- **步骤 2**：回到虚拟环境安装 mysqlclient
+
+```bash
+pip3 install mysqlclient
+```
+
+### 3.4定义模型类
+
+- 模型类被定义在"应用/models.py"文件中  
+- 模型类必须继承自Model类,位于包django.db.models中  
+
+接下来首先以"图书-人物"管理为例进行演示
+![图书-人物](res/book-people.png '图书-人物')
+
+#### 3.4.1定义
+
+在models.py文件中定义模型类
+
+```python
+from django.db import models
+
+# 准备书籍列表信息的模型类
+class BookInfo(models.Model):
+    # 创建字段,字段类型...
+    name = models.CharField(max_length=28, verbose_name='名称')
+    pub_date = models.DateField(verbose_name='发布日期', null=True)
+    readcount = models.IntegerField(default=0, verbose_name='阅读量')
+    commentcount = models.IntegerField(default=0, verbose_name='评论量')
+    is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
+
+    # Meta是模型的配置项，专门用来定制模型的非字段相关规则
+    class Meta:
+        db_table = 'bookinfo'  # 修改表名
+        verbose_name = '图书'  # 在admin站点中显示的名称
+
+    def __str__(self):
+        '''定义每个数据对象的显示信息'''
+        return self.name
+
+# 准备人物列表信息的模型类
+class PeopleInfo(models.Model):
+    GENDER_CHOICES = (
+        (0, 'male'),
+        (1, 'female')
+    )
+    name = models.CharField(max_length=20, verbose_name='名称')  
+    gender = models.SmallIntegerField(choices=GENDER_CHOICES, default=0, verbose_name='性别')
+    description = models.CharField(max_length=200, null=True, verbose_name='描述信息')
+    book = models.ForeignKey(BookInfo, on_delete=models.CASCADE, verbose_name='图书')
+    is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
+
+    class Meta:
+        db_table = 'peopleinfo'
+        verbose_name = '人物信息'
+
+    def __str__(self):
+        return self.name
+```
+
+1）数据库表名  
+
+模型类如果未指明表名，Django默认以小写app应用名_小写模型类名为数据库表名  
+可通过**db_table**指明数据库表名  
+
+2）关于主键  
+
+django会为表创建自动增长的主键列，每个模型只能有一个主键列，如果果使用选项设置某属性为主键列后，django不会再创建自动增长的主键列  
+默认创建的主键列属性为id，可以使用pk代替，pk全拼为`primary key` 
+
+3）属性命名限制  
+
+- 不能是python的保留关键字
+- 不允许使用连续的下划线，这是由django的查询方式决定的
+- 定义属性时需要指定字段类型，通过字段类型的参数指定选项，语法如下：
+
+```text
+属性=models.字段类型(选项)
+```
+
+4）字段类型
+
+| 字段类型         | 说明                                                                 |
+|------------------|----------------------------------------------------------------------|
+| AutoField        | 自动增长的IntegerField，通常不用指定，不指定时Django会自动创建属性名为`id`的自动增长属性 |
+| BooleanField     | 布尔字段，值为`True`或`False`                                         |
+| NullBooleanField | 支持`Null`、`True`、`False`三种值                                      |
+| CharField        | 字符字段，必须指定`max_length`参数表示最大字符个数                     |
+| TextField        | 大文本字段，一般用于内容超过4000个字符的场景                           |
+| IntegerField     | 整数类型字段，存储普通整数数据                                         |
+| DecimalField     | 十进制浮点数字段，需指定`max_digits`（总位数）和`decimal_places`（小数位数）参数 |
+| FloatField       | 浮点数字段，用于存储浮点类型数据                                       |
+| DateField        | 日期类型字段<br>- `auto_now`：每次保存对象时自动设为当前时间（用于“最后修改时间”），默认为False<br>- `auto_now_add`：对象创建时自动设为当前时间（用于“创建时间”），默认为False<br>- 注意：`auto_now`和`auto_now_add`相互排斥，不可同时使用 |
+| TimeField        | 时间类型字段，支持的参数与`DateField`一致                               |
+| DateTimeField    | 日期时间类型字段，支持的参数与`DateField`一致                           |
+| FileField        | 上传文件字段，用于接收用户上传的文件数据                               |
+| ImageField       | 继承自`FileField`，额外增加了“校验上传内容为有效图片”的功能             |
+
+5）选项
+
+| 选项         | 说明                                                                 |
+|--------------|----------------------------------------------------------------------|
+| null         | 如果为True，表示允许为空，默认值是False                               |
+| blank        | 如果为True，则该字段允许为空白，默认值是False                         |
+| db_column    | 字段的名称，如果未指定，则使用属性的名称                             |
+| db_index     | 若值为True，则在表中会为此字段创建索引，默认值是False                 |
+| default      | 默认                                                                 |
+| primary_key  | 若为True，则该字段会成为模型的主键字段，默认值是False，一般作为AutoField的选项使用 |
+| unique       | 如果为True，这个字段在表中必须有唯一值，默认值是False                 |  
+
+**null是数据库范畴的概念，blank是表单验证范畴的**
+
+6）外键
+在设置外键时,需要通过**on_delete**选项指明主表删除数据时，对于外键引用表数据如何处理，在`django.db.models`中包含了可选常量:
+
+- **CASCADE**级联,删除主表数据时连通一起删除外键表中数据
+- **PROTECT**保护,通过抛出**ProtectedError**异常,来阻止删除主表中被外键应用的数据
+- **SET_NULL**设置为NULL,仅在该字段null=True允许为null时可用用
+- **SET_DEFAULT**设置为默认值,仅在该字段设置了默认值时可用
+- **SET()** 设置为特定值或者调用特定方法
+- **DO_NOTHING**不做任何操作,如果数据库前置指明级联性,此选项会抛出**IntegrityError**异常
 
 ## 4.视图
