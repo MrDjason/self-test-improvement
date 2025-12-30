@@ -27,4 +27,6 @@ $$x_2$$
 - 使用`\left(`或`\right)`使符号大小与邻近的公式相适应（该语句适用于所有括号类型），如`$\left(\frac{x}{y}\right)$`可表示$\left(\frac{x}{y}\right)$
 
 ### 2.大括号
+`由于大括号{}被用于分组，因此需要使用{和}表示大括号，也可以使用\lbrace 和\rbrace来表示。如{ab}或\lbrace ab\rbrace表示:\{ab\}`
+
 ### 3.尖括号
