@@ -147,3 +147,14 @@ git push -u origin main
 ```
 - `-u`：-u是--set-upstream的缩写，核心作用是建立本地ubuntu分支↔远程 origin/ubuntu分支的追踪关系
 - `origin`：Git自动把冗长的仓库URL简化成了origin这个短名字
+
+- 强制拉取远程代码覆盖本地
+- 先拉取远程最新代码到本地仓库
+```
+git fetch origin
+```
+
+- 强制将本地代码重置至远程main分支
+```
+git reset --hard origin/main
+```
