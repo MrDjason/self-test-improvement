@@ -1,0 +1,99 @@
+% ==================== 文档类 ====================
+\documentclass[12pt, a4paper]{article}
+% ==================== 中文支持 ====================
+\usepackage[UTF8]{ctex} 
+% ==================== 页面设置 ====================
+\usepackage{geometry}
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% ==================== 数学公式 ====================
+\usepackage{amsmath} % 基础数学环境 
+\usepackage{amssymb} % 数学符号
+\usepackage{amsthm}  % 定理环境
+
+% ==================== 图表支持 ====================
+\usepackage{graphicx}  % 插入图片
+\usepackage{float}     % 浮动体位置控制
+\usepackage{subfigure} % 子图支持
+\usepackage{booktabs}  % 三线表
+\usepackage{multirow}  % 表格合并行
+\usepackage{array}     % 表格增强
+
+% ==================== 代码高亮 ====================
+\usepackage{listings}  % 代码块
+\usepackage{xcolor}    % 颜色支持
+
+% 代码样式设置
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+% ==================== 超链接 ====================
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% ==================== 参考文献 ====================
+\usepackage{cite}
+
+% ==================== 实用宏包 ====================
+\usepackage{enumerate} % 自定义列表
+\usepackage{enumitem}  % 列表增强
+\usepackage{caption}   % 图表标题
+\usepackage{titlesec}  % 标题格式
+
+% ==================== 文档信息 ====================
+\title{文档标题}
+\author{作者姓名
+\date{\today}
+
+% ==================== 正文开始 ====================
+\begin{document}
+\maketitle
+\section{皮尔逊相关系数 (Pearson Correlation Coefficient)}
+皮尔逊相关系数是一种衡量两个变量之间线性相关程度的统计指标。其定义为两个变量的协方差与其标准差乘积的比值，通常用字母 $r$ 表示。
+\subsection{数学定义}
+对于样本数据集 $(x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)$，样本皮尔逊相关系数 $r$ 的计算公式如下：
+\begin{equation}
+r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n} (x_i - \bar{x})^2 \sum_{i=1}^{n} (y_i - \bar{y})^2}}
+\end{equation}
+
+其中：
+\begin{itemize}
+    \item $\bar{x}$ 和 $\bar{y}$ 分别是变量 $x$ 和 $y$ 的样本均值。
+    \item 分子表示变量 $x$ 和 $y$ 的协方差。
+    \item 分母是变量 $x$ 和 $y$ 标准差的乘积。
+\end{itemize}
+
+\subsection{取值意义}
+
+皮尔逊相关系数的取值范围为 $[-1, 1]$：
+
+\begin{enumerate}
+    \item \textbf{$r > 0$}：表示两个变量正相关。
+    \item \textbf{$r < 0$}：表示两个变量负相关。
+    \item \textbf{$|r| = 1$}：表示变量之间存在完全线性的关系。
+    \item \textbf{$r = 0$}：表示变量之间不存在线性相关关系（但可能存在非线性关系）。
+\end{enumerate}
+
+\end{document}

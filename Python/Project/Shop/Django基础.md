@@ -1785,3 +1785,384 @@ HttpResponse.set_cookie(cookie名, value=cookie值, max_age=cookie有效期)
 ```
 
 - **max_age**单位为秒，默认为None，如果是临时cookie，可以将max_age设置为None
+
+```python
+def cookie(request):
+  response = HttpResponse('ok')
+  response.set_cookie('itcast1', 'python1') # 临时cookie
+  response.set_cookie('itcast2', 'python2', max_age=3600) # 有效期一小时
+  return response
+```
+
+**读取Cookie**
+
+可以通过`HttpResponse`对象的`Cookies`属性来读取本次请求携带的cookie值。`request.COOKIES`为字典类型
+
+```python
+def cookie(request):
+  cookie1 = request.COOKIES.get('itcast1')
+  print(cookie1)
+  return HttpResponse('ok')
+```
+
+**删除Cookie**
+
+```python
+def cookie(request):
+  response = HttpResponse('delete_cookie')
+  response.set_cookie('name', '123456')
+  response.delete_cookie('name')
+  return response
+```
+
+#### 4.5.2 Session
+
+**启用Session**
+
+Django项目默认启用Session，Session默认保存在服务器端，需要依赖Cookie  
+可以在settings.py文件中查看  
+
+```python
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', # Session
+    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+```
+
+第一次请求`.../set_session/?username=itcast`会在服务器端设置session信息，服务器生成一个sessionid的cookie信息。第二次及之后的请求会携带这个sessionid，服务器会验证这个sessionid  
+
+```python
+def session(request):
+  return HttpResponse('set_session')
+```
+
+```python
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+```
+**存储方式**
+
+在redis中保存session，需要引入第三方扩展，我们可以使用django-redis来解决  
+
+**[官方文档](https://django-redis-chs.readthedocs.io/zh_CN/latest/)**
+
+- 1)安装扩展
+
+```bash
+pip install django-redis
+```
+
+- 2)配置
+
+在settings.py文件中做如下设置
+
+```python
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+```
+
+**注意**
+
+如果redis的ip地址不是本地回环127.0.0.1，而是其他地址，访问Django时，可能出现Redis连接错误。
+
+**解决方法**
+
+修改redis配置文件，添加特定ip地址  
+打开redis的配置文件  
+
+```bash
+sudo vim /etc/redis/redis.conf
+```
+
+在如下配置项进行修改
+
+```bash
+# 在如下配置项进行修改（如要添加10.211.55.5地址）
+
+# By default Redis listens for connections from all the network interfaces
+# available on the server. It is possible to listen to just one or multiple
+# interfaces using the "bind" configuration directive, followed by one or
+# more IP addresses.
+#
+# Examples:
+#
+# bind 192.168.1.100 10.0.0.1
+# bind 127.0.0.1
+bind 127.0.0.1 10.211.55.5
+```
+
+重启redis服务
+
+```bash
+sudo service redis-server restart
+```
+
+**Session操作**
+
+1. **以键值对的格式写session**
+
+```python
+request.session['键'] = 值
+```
+
+2. **根据键读取值**
+
+```python
+request.session.get('键', 默认值)
+```
+
+3. **清除所有session（在存储中删除值部分）**
+
+```python
+request.session.clear()
+```
+
+4. **清除session数据（在存储中删除session的整条数据）**
+
+```python
+request.session.flush()
+```
+
+5. **删除session中的指定键及值（在存储中只删除某个键及对应的值）**
+
+```python
+del request.session['键']
+```
+
+6. **设置session的有效期**
+
+```python
+request.session.set_expiry(value)
+```
+
+- 如果value是一个整数，session将在value秒没有活动后过期
+- 如果value为0，那么用户session的Cookie将在用户的浏览器关闭时过期
+- 如果value为None，那么session有效期将采用系统默认值，默认为两周，可以通过在settings.py中设置**SESSION_COOKIE_AGE**来设置全局默认值。
+
+
+### 4.6 类试图和中间件
+
+一个视图是否可以处理两种逻辑？比如get和post请求逻辑
+
+**如何在一个视图中处理get和post请求**
+
+![类视图](./res/类视图.jpg "类视图")
+
+**注册视图处理get和post请求**
+
+以函数的方式定义的视图称为函数视图，函数视图便于理解。但是遇到一个视图对应的路径提供了多种不同HTTP请求方式的支持时，便需要在一个函数中编写不同的业务逻辑，代码可读性与复用性都不佳。  
+
+```python
+def register(request):
+    """处理注册"""
+
+    # 获取请求方法，判断是GET/POST请求
+    if request.method == 'GET':
+        # 处理GET请求，返回注册页面
+        return render(request, 'register.html')
+    else:
+        # 处理POST请求，实现注册逻辑
+        return HttpResponse('这里实现注册逻辑')
+```
+
+#### 4.6.1 类视图使用
+
+在Django中也可以使用类定义一个视图，成为**类视图**。  
+使用类视图可以将视图对应的不同请求方式以类中的不同方法来区别定义，如下所示
+
+```python
+from django.views.generic import View
+
+class RegisterView(View):
+  '''类视图：处理注册'''
+
+  def get(self, request):
+    '''处理GET请求，返回注册页面'''
+    return render(request, 'register.html')
+
+  def post(self, request):
+    '''处理POST请求，实现注册逻辑'''
+    return HttpResponse('这里实现注册逻辑')
+```
+
+类视图的好处：
+- **代码可读性好**
+- **类视图相对于函数试图有更高的复用性**，如果其他地方需要用到某个类视图的某个特定逻辑，直接继承该类视图即可  
+
+定义类试图需要继承自Django提供的父类**View**，可使用`from django.views.generic import View`或者`from django.views.generic.base import View`导入，定义方式如上所示  
+
+**配置路由时，使用类试图的`as_view()`方法来添加。**
+
+![分析](./res/分析.jpg "分析")
+
+**类视图的多继承重写dispatch**
+```python
+class CenterView(View):
+  def get(self, request):
+    return HttpResponse('ok')
+
+  def post(self, request):
+    return HttpResponse('ok')
+```
+
+使用面向对象多继承的特性  
+
+```python
+class CenterView(LoginRequireMixin, View):
+
+  def get(self, request):
+    return HttpResponses('OK')
+
+  def post(self, request):
+    return HttpResponse('OK')
+```
+
+LoginRequiredMixin内部会进行用户是否登录的判断（以登录admin站点）如果登录成功，则显示页面。不成功系统会为我们跳转到系统的accounts/login/页面中来  
+
+#### 4.6.2 中间件
+
+Django中的中间件是一个轻量级、底层的插件系统，可以介入Django的请求和响应处理过程，修改Django的输入或输出。中间件的设计为开发者提供了一种无倾入式的开发方式，增强了Django框架的健壮性。  
+我们可以使用中间件，在Django处理视图的不同阶段对输入或输出进行干预。  
+[中间件文档]()
+
+**中间件的定义方法**
+
+> Django在中间件中预置了六个方法，这六个方法会在不同的阶段自动执行，对输入或输出进行干预
+
+- 1.1 初始化方法
+  - 启动Django程序，初始化中间件时，自动调用一次，用于确定是否启用当前中间件
+
+```python
+def __init__(self, get_response=None):
+  pass
+```
+
+- 1.2 处理请求前的方法
+  - 在处理每个请求前，自动调用，返回None或HttpResponse对象
+
+```python
+def process_request(self, request):
+  pass
+```
+
+- 1.3 处理视图前的方法
+  - 在处理每个视图前，自动调用，返回None或HttpResponse对象
+
+```python
+def process_view(self, request, view_func, view_args, view_kwargs):
+  pass
+```
+
+- 1.4 处理模板响应前的方法
+  - 在处理每个模板响应前，自动调用，返回实现了render方法的响应对象
+
+```python
+def process_template_response(self, request, response):
+  pass
+```
+
+- 1.5 处理响应后的方法
+  - 在每个响应返回给客户端之前，自动调用，返回HttpResponse对象
+
+```python
+def process_response(self, request, response):
+  pass
+```
+
+- 1.6 异常处理
+  - 当视图抛出异常时，自动调用，返回一个HttpResponse对象
+
+```python
+def process_exception(self, exception):
+  pass
+```
+
+定义中间件
+
+```python
+# 导入中间件的父类
+from django.utils.deprecation import MiddlewareMixin
+
+class TestMiddleware1(MiddlewareMixin):
+  '''自定义中间件'''
+  def process_request(self, request):
+    '''处理请求前自动调用'''
+    print('process_request1 被调用')
+
+  def process_view(self, request, view_func, view_args, view_kwargs):
+    '''处理视图前被调用'''
+    print('process_view1 被调用')
+
+  def process_response(self, request, response):
+    '''在每个响应返回给客户端之前自动调用'''
+    print('process_response1 被调用')
+    return response
+```
+
+需要在`settings.py`注册，否则不会调用执行
+
+```python
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #注册中间件
+    'book.middleware.TestMiddleWare',
+]
+```
+
+定义一个视图进行测试
+
+```python
+def middleware(request):
+    print('view 视图被调用')
+    return HttpResponse('OK')
+```
+
+执行结果
+
+```python
+process_request1 被调用
+process_view1 被调用
+process_response1 被调用
+```
+
+**多个中间件的执行顺序**
+
+- 在请求视图被处理前，中间件由上至下依次执行
+- 在请求视图被处理后，中间件由上至下依次执行
+
+```python
+# 在请求视图被处理前，中间件由上至下依次执行
+# 在请求视图被处理后，中间件由上至下依次执行
+MIDDLEWARE = [
+  ...
+]  
+```
