@@ -2,7 +2,6 @@
 Deep_Learning/Rethink_Fun/res/mnist_train.csv
 Deep_Learning/Rethink_Fun/res/mnist_test.csv
 Deep_Learning/Rethink_Fun/res/PetImages/
-<<<<<<< Updated upstream
 读书/
 周报.md
 Godot/
@@ -11,7 +10,6 @@ Godot/
 Machine_Learning/res
 作业/
 Python/Project/Shop/res/原型/
-=======
 论文/
 Python/Project/Shop/res/
->>>>>>> Stashed changes
+Deep_Learning/Deep Learning with Python and PyTorch/data/
