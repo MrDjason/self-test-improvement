@@ -7,7 +7,7 @@ from collections import defaultdict
 rcParams['font.family'] = 'SimHei'
 plt.rcParams['axes.unicode_minus'] = False
 
-env = gym.make('Blackjack-v1', natural=False, sab=False)
+env = gym.make('Blackjack-v1', natural=False, sab=False, render_mode='human')
 state, _ = env.reset()
 
 # 改正策略
@@ -23,7 +23,7 @@ returns = defaultdict(list)
 def epsilon_greedy(state, epsilon=0.1):
     if np.random.rand() < epsilon:
         return env.action_space.sample()
-    return np.argmax(Q[state])
+    return np.argmax(Q[state]) # Q列表最大索引
 
 
 num_episodes = 50000
