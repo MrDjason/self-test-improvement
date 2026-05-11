@@ -2,9 +2,7 @@
 using namespace std;
 // #define 宏常量
 // const 修饰该变量为常量不能修改
-#define day 7 // day = 14 则错误 day是常量一修改则报错
-
-
+#define day 7 // # define day = 14 则错误 day是常量一修改则报错
 
 int main()
 {

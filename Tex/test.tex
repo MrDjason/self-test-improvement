@@ -1,99 +1,67 @@
-% ==================== 文档类 ====================
-\documentclass[12pt, a4paper]{article}
-% ==================== 中文支持 ====================
-\usepackage[UTF8]{ctex} 
-% ==================== 页面设置 ====================
-\usepackage{geometry}
-\geometry{
-    left=2.5cm,
-    right=2.5cm,
-    top=2.5cm,
-    bottom=2.5cm
-}
-
-% ==================== 数学公式 ====================
-\usepackage{amsmath} % 基础数学环境 
-\usepackage{amssymb} % 数学符号
-\usepackage{amsthm}  % 定理环境
-
-% ==================== 图表支持 ====================
-\usepackage{graphicx}  % 插入图片
-\usepackage{float}     % 浮动体位置控制
-\usepackage{subfigure} % 子图支持
-\usepackage{booktabs}  % 三线表
-\usepackage{multirow}  % 表格合并行
-\usepackage{array}     % 表格增强
-
-% ==================== 代码高亮 ====================
-\usepackage{listings}  % 代码块
-\usepackage{xcolor}    % 颜色支持
-
-% 代码样式设置
-\lstset{
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{blue},
-    commentstyle=\color{gray},
-    stringstyle=\color{red},
-    numbers=left,
-    numberstyle=\tiny\color{gray},
-    stepnumber=1,
-    numbersep=8pt,
-    showstringspaces=false,
-    breaklines=true,
-    frame=single,
-    backgroundcolor=\color{gray!10}
-}
-
-% ==================== 超链接 ====================
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
-}
-
-% ==================== 参考文献 ====================
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
 \usepackage{cite}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
 
-% ==================== 实用宏包 ====================
-\usepackage{enumerate} % 自定义列表
-\usepackage{enumitem}  % 列表增强
-\usepackage{caption}   % 图表标题
-\usepackage{titlesec}  % 标题格式
+\title{Research on Optimal Control of Wet Desulfurization Slurry Feeding System in Coal-Fired Power Plants Based on Deep Reinforcement Learning}
+\author{Zhang Kaiwen \\
+College of Communication and Information Engineering, \\
+Xi'an University of Science and Technology, Xi'an 710065, China}
+\date{April 2026}
 
-% ==================== 文档信息 ====================
-\title{文档标题}
-\author{作者姓名
-\date{\today}
-
-% ==================== 正文开始 ====================
 \begin{document}
+
 \maketitle
-\section{皮尔逊相关系数 (Pearson Correlation Coefficient)}
-皮尔逊相关系数是一种衡量两个变量之间线性相关程度的统计指标。其定义为两个变量的协方差与其标准差乘积的比值，通常用字母 $r$ 表示。
-\subsection{数学定义}
-对于样本数据集 $(x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)$，样本皮尔逊相关系数 $r$ 的计算公式如下：
-\begin{equation}
-r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n} (x_i - \bar{x})^2 \sum_{i=1}^{n} (y_i - \bar{y})^2}}
-\end{equation}
 
-其中：
-\begin{itemize}
-    \item $\bar{x}$ 和 $\bar{y}$ 分别是变量 $x$ 和 $y$ 的样本均值。
-    \item 分子表示变量 $x$ 和 $y$ 的协方差。
-    \item 分母是变量 $x$ 和 $y$ 标准差的乘积。
-\end{itemize}
+\begin{abstract}
+The wet flue gas desulfurization (WFGD) system is the core facility for controlling SO\(_2\) emissions in coal-fired power plants, where the control accuracy of the limestone slurry feeding system directly affects the desulfurization efficiency, operation cost, and environmental compliance level. Aiming at the problems of traditional PID control such as difficult parameter tuning, weak anti-interference ability, and inability to balance multi-objective optimization when facing the strong nonlinearity, large time delay, and multivariable coupling characteristics of the desulfurization process, this paper proposes an intelligent control method for desulfurization slurry feeding based on deep reinforcement learning.
 
-\subsection{取值意义}
+First, by analyzing the mechanism of the wet desulfurization process, a dynamic relationship model among the SO\(_2\) concentration at the inlet of the desulfurization tower, flue gas flow rate, slurry pH value, and slurry feeding flow rate is established, and the state space, action space, and multi-objective reward function of the system are determined. Second, a desulfurization slurry feeding controller is designed using the Proximal Policy Optimization (PPO) algorithm. Through interactive training with the simulation environment, the controller can automatically adjust the slurry feeding flow rate according to the real-time operating state, achieving the collaborative optimization of desulfurization efficiency and slurry consumption.
+\end{abstract}
 
-皮尔逊相关系数的取值范围为 $[-1, 1]$：
+\noindent\textbf{Keywords:} Wet Flue Gas Desulfurization; Limestone Slurry Feeding; Deep Reinforcement Learning; Proximal Policy Optimization; Multi-objective Optimization
 
+\section{Introduction}
+
+Wet flue gas desulfurization (WFGD) is the most widely used SO\(_2\) removal technology in coal-fired power plants due to its high desulfurization efficiency and reliable operation~\cite{srivastava2001}. In the WFGD system, the limestone slurry feeding subsystem plays a critical role: the slurry flow rate directly determines the pH value in the absorption tower, which further affects the SO\(_2\) absorption rate, gypsum crystallization quality, and overall operating cost~\cite{zheng2017}. However, the desulfurization process exhibits strong nonlinearity, large time delay, and multivariable coupling characteristics. The inlet SO\(_2\) concentration and flue gas flow rate often fluctuate significantly with changes in coal quality and load demand, making precise and real-time control of the slurry feeding rate a challenging task.
+
+Traditionally, proportional-integral-derivative (PID) control is adopted in most industrial WFGD systems because of its simple structure and easy implementation~\cite{astrom1995}. Nevertheless, PID controllers rely on fixed parameters and linear assumptions. When applied to the highly nonlinear desulfurization process, they suffer from difficult parameter tuning, poor anti-interference ability, and an inability to balance multiple conflicting objectives, such as maintaining high desulfurization efficiency while minimizing limestone consumption and avoiding unnecessary pump wear~\cite{liu2018}. Advanced control strategies, including fuzzy logic control~\cite{si2016} and model predictive control (MPC)~\cite{lee2011}, have been explored to address these issues. Although these methods improve performance to some extent, they often require an accurate system model or expert rules, which are difficult to obtain in practice due to the time-varying nature of the desulfurization reaction and measurement noise.
+
+In recent years, deep reinforcement learning (DRL) has emerged as a promising paradigm for solving complex sequential decision-making problems without requiring an explicit mathematical model of the plant~\cite{mnih2015}. By interacting with the environment and learning from trial and error, a DRL agent can automatically discover optimal control policies that adapt to dynamic changes. Among various DRL algorithms, the Proximal Policy Optimization (PPO) algorithm stands out for its stable training and excellent sample efficiency, and it has been successfully applied to numerous continuous control tasks, such as autonomous driving~\cite{schulman2017} and HVAC systems~\cite{wei2017}. However, its application to the wet desulfurization slurry feeding system has rarely been reported.
+
+To fill this gap, this paper proposes an intelligent control method for the desulfurization slurry feeding system based on deep reinforcement learning. Specifically, we first establish a dynamic relationship model among the inlet SO\(_2\) concentration, flue gas flow rate, slurry pH value, and slurry feeding flow rate by analyzing the mechanism of the wet desulfurization process. The state space, action space, and a multi-objective reward function that considers both desulfurization efficiency and slurry consumption are then defined. A PPO-based controller is designed and trained interactively with the simulation environment. The proposed method enables the controller to automatically adjust the slurry feeding flow rate in real time according to the operating state, achieving collaborative optimization of desulfurization performance and operating cost. The main contributions of this paper are as follows:
 \begin{enumerate}
-    \item \textbf{$r > 0$}：表示两个变量正相关。
-    \item \textbf{$r < 0$}：表示两个变量负相关。
-    \item \textbf{$|r| = 1$}：表示变量之间存在完全线性的关系。
-    \item \textbf{$r = 0$}：表示变量之间不存在线性相关关系（但可能存在非线性关系）。
+    \item A dynamic model of the WFGD slurry feeding system suitable for DRL training is constructed.
+    \item A multi-objective reward function is designed to balance desulfurization efficiency and slurry economy.
+    \item A PPO-based controller is implemented and validated, showing superiority over traditional PID control in simulation.
 \end{enumerate}
+
+The remainder of this paper is organized as follows. Section 2 describes the system modeling and problem formulation. Section 3 details the design of the DRL-based controller using the PPO algorithm. Section 4 presents the simulation setup, results, and discussion. Section 5 concludes the paper and suggests future work.
+
+% 参考文献
+\begin{thebibliography}{99}
+\bibitem{srivastava2001} R. K. Srivastava and W. Jozewicz, ``Flue gas desulfurization: the state of the art,'' \textit{Journal of the Air \& Waste Management Association}, vol. 51, no. 12, pp. 1676–1688, 2001.
+
+\bibitem{zheng2017} C. D. Zheng, L. Xu, and Y. X. Wu, ``Modeling and control of pH in wet flue gas desulfurization process,'' \textit{Control Engineering Practice}, vol. 68, pp. 67–75, 2017.
+
+\bibitem{astrom1995} K. J. Åström and T. Hägglund, \textit{PID Controllers: Theory, Design, and Tuning}, 2nd ed. Research Triangle Park, NC: ISA, 1995.
+
+\bibitem{liu2018} Y. Liu, B. Li, and X. Zhang, ``Optimal control of limestone slurry feeding in WFGD systems based on multi-objective optimization,'' \textit{Proceedings of the CSEE}, vol. 38, no. 12, pp. 3630–3638, 2018 (in Chinese).
+
+\bibitem{si2016} M. Si, S. Chen, and J. Wang, ``Fuzzy gain scheduling control of pH in a wet flue gas desulfurization process,'' \textit{Journal of Process Control}, vol. 39, pp. 76–84, 2016.
+
+\bibitem{lee2011} J. H. Lee, ``Model predictive control: review of the three decades of development,'' \textit{International Journal of Control, Automation and Systems}, vol. 9, no. 3, pp. 415–424, 2011.
+
+\bibitem{mnih2015} V. Mnih et al., ``Human-level control through deep reinforcement learning,'' \textit{Nature}, vol. 518, no. 7540, pp. 529–533, 2015.
+
+\bibitem{schulman2017} J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov, ``Proximal policy optimization algorithms,'' \textit{arXiv preprint arXiv:1707.06347}, 2017.
+
+\bibitem{wei2017} T. Wei, Y. Wang, and Q. Zhu, ``Deep reinforcement learning for building HVAC control,'' in \textit{Proc. of the 54th ACM/EDAC/IEEE Design Automation Conference (DAC)}, 2017, pp. 1–6.
+
+\end{thebibliography}
 
 \end{document}
