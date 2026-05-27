@@ -1,0 +1,92 @@
+\documentclass[10pt, a4paper, oneside]{ctexart}
+
+\usepackage{geometry, booktabs, amsmath, amssymb}
+
+
+\renewcommand{\abstractname}{\Large\textbf{摘要}}
+\geometry{left=2.9cm, right=2.9cm, top=3.18cm, bottom=3.18cm}
+\linespread{1.5}
+
+\title{\textbf{油核桃品质分析}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\setcounter{page}{0}
+\thispagestyle{empty}
+
+\begin{abstract}
+    {\fontsize{10}{15}\selectfont\
+    这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要这里是摘要 \\
+    \textbf{关键词}：这里是关键词}
+\end{abstract}
+
+\newpage
+
+\section{问题重述与分析}
+\subsection{问题背景与重述}
+核桃油因富含不饱和脂肪酸而极易氧化，氧化过程中挥发性有机物(VOCs)呈现复杂的消涨规律，直接影响营养保留与感官接受度。给定三种核桃油在加速氧化条件下、多个时间点的数十种VOC浓度数据，需解决三个递进问题：其一，挖掘VOCs的时序数据结构，构建可靠动力学模型描述三种核桃油在氧化过程中基本成分和氧化产物的变化规律，并给出不同物质的含量变化趋势、增长速率、峰值出现时间等参数；其二，识别并提取表征对氧化进程敏感的标志物，并对比不同核桃油中氧化标志物的变化速率、最终含量等，讨论三种核桃油的氧化稳定性；其三，融合多指标建立动态品质综合评价模型，利用所建模型对不同氧化阶段的三种核桃油进行品质量化评分与等级划分，分析氧化进程对各品种核桃油品质的影响程度，对比不同品种核桃油的品质保持能力。
+
+\section{模型假设与符号说明}
+
+\subsection{模型假设}
+
+\begin{itemize}
+    \item 假设所有Vocs浓度数据均在相同的样本处理和检测环境下获得。
+    \item 假设核桃油氧化过程中各物质含量的变化可用指数增长或衰减模型近似描述。
+    \item 假设不同化学成分的氧化行为相互独立，只和时间变量有关，不考虑成分间的直接化学计量耦合。
+    \item 假设当某个关键氧化物质的浓度超过一个固定阈值时，就认为该核桃油已经发生不可逆的氧化，这个时间点就是“氧化终点”。
+    \item 假设每个指标对油品好坏的影响具有非线性可加权性，且指标间的偏好方向不随时间发生逆转。
+    \item 假设在采样间隔期内，VOC浓度变化可视为连续可导的平滑函数，不存在突变振荡。
+    \item 假设实验期间温度、光照等条件恒定，每个物质的反应速率常数不会因为浓度而改变。
+\end{itemize}
+
+\newpage
+
+\subsection{符号说明}
+
+\begin{table}[htbp]
+    \centering
+    \caption{符号说明}
+    \begin{tabular}[b]{cc}
+        \toprule[2pt]
+        符号 & 意义 \\
+        \midrule
+        $t$ & 氧化时间 \\
+        $C_{i,k}(t)$ & 品种i中化合物k在时间t的浓度 \\
+        $G_{i,g}(t)$ & 品种i中类别g在时间t的小计浓度 \\
+        $b_{i,k}$ & 化合物k在品种i中的线性增长斜率 \\
+        $r_{i,k}$	& 化合物k浓度与氧化时间的秩相关系数 \\
+        \bottomrule[2pt]
+    \end{tabular}
+\end{table}
+
+\newpage
+
+\section{模型建立与求解}
+
+\subsection{问题一的确立与求解}
+
+\subsubsection{建模准备与分析}
+
+\subsubsection{模型确立}
+
+\paragraph{数据预处理与归一化}\mbox{}\par
+针对核桃油品质分析问题，数据清洗是建模前至关重要的一步。原始数据以Word中表格形式提供，包含大量特殊标记（如“--”、空白、字母上标、±标准差等），且三种核桃油的时间点不完全一致（香玲和鲁光为0d--7d，山核桃为0d--10d）。由于各个基本信息的取值范围变化幅度不一，直接放入模型中会导致效果不佳，所以还需要对数据做归一化处理。
+
+对每个化合物的浓度序列$x_i(t)$进行$min-max$归一化：
+
+\[
+\tilde{x}_i(t) = \frac{x_i(t) - \min_t x_i(t)}{\max_t x_i(t) - \min_t x_i(t)}
+\]
+
+归一化后的序列值域为 $[0,1]$，保留了变化形态（上升/下降/峰值相对位置）
+
+\paragraph{DTW距离与层次聚类}
+
+
+
+\subsubsection{模型求解与结果分析}
+
+\end{document}
