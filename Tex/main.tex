@@ -1,4 +1,731 @@
-\documentclass{ctexart} % 中文友好
+\documentclass{article}
+\usepackage{graphicx, ctex, amsmath, geometry, amssymb}
+
+\title{\bfseries{\huge{数学作业}}}
+\author{西安科技大学\hspace{1em}通信学院\hspace{1em}电子科学与技术 \\
+学号：25207035001\hspace{1em}姓名：张凯文}
+\date{2026年5月}
+\linespread{1.5}
+\geometry{a4paper, margin=2cm}
+
 \begin{document}
-你好，\LaTeX！这是 XeLaTeX 自测。我是泪花花。
+
+\maketitle
+
+\newpage
+\section{第一题}\noindent
+在矩阵空间 $\mathbb{R}^{2\times2}$ 中，给定矩阵 $B = \begin{bmatrix} 
+1 & 2 \\
+0 & 3
+\end{bmatrix}$，线性变换 $T$ 为
+\[
+T(X)=BX-XB,\quad(\forall X \in \mathbb{R}^{2\times2})
+\]
+求 $N(T)$ 和 $R(T)$ 的基与维数。
+
+\textbf{解：}
+\begin{align*}
+N(T) &= \left\{ X \in \mathbb{R}^{2\times2} \mid T(X)=0 \right\} \\
+\text{设 } X &= \begin{bmatrix} a & b \\ c & d \end{bmatrix} \\
+T(X) &= BX - XB = 
+\begin{bmatrix} 1 & 2 \\ 0 & 3 \end{bmatrix}
+\begin{bmatrix} a & b \\ c & d \end{bmatrix} -
+\begin{bmatrix} a & b \\ c & d \end{bmatrix}
+\begin{bmatrix} 1 & 2 \\ 0 & 3 \end{bmatrix} \\
+&= \begin{bmatrix} c-3b & -a-2b+d \\ 3a+2c-3d & 3b-c \end{bmatrix} \\
+\text{令 } T(X)=0 \Rightarrow &
+\begin{cases}
+c-3b = 0 \\
+-a-2b+d = 0 \\
+3a+2c-3d = 0 \\
+3b-c = 0
+\end{cases}
+\Rightarrow
+\begin{cases}
+c = 3b \\
+d = a+2b
+\end{cases} \\
+\Rightarrow X &= \begin{bmatrix} a & b \\ 3b & a+2b \end{bmatrix}
+= a\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} + b\begin{bmatrix} 0 & 1 \\ 3 & 2 \end{bmatrix} \\
+\because &
+\begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+\text{ 与 }
+\begin{pmatrix} 0 \\ 1 \\ 3 \\ 2 \end{pmatrix}
+\text{ 线性无关}
+\Rightarrow M_1 = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix},\;
+M_2 = \begin{bmatrix} 0 & 1 \\ 3 & 2 \end{bmatrix}
+\text{ 线性无关} \\
+\therefore & M_1, M_2 \text{ 是 } N(T) \text{ 的一组基，} \dim N(T) = 2 \\
+R(T) &= \left\{ T(X) \mid X \in \mathbb{R}^{2\times2} \right\}
+\end{align*}
+\[
+\because \dim N(T) + \dim R(T) = \dim \mathbb{R}^{2\times2} = 4
+\quad\Rightarrow\quad \dim R(T) = 2
+\]
+
+\[
+T(E_{11}) = \begin{bmatrix}0 & -2 \\ 0 & 0 \end{bmatrix},\quad
+T(E_{12}) = \begin{bmatrix}0 & -2 \\ 0 & 0 \end{bmatrix},\quad
+T(E_{21}) = \begin{bmatrix}2 & 0 \\ 2 & -2 \end{bmatrix},\quad
+T(E_{22}) = \begin{bmatrix}0 & 2 \\ 0 & 0 \end{bmatrix}
+\]
+\[
+\gamma_1=\begin{pmatrix} 0 \\ -2 \\ 0 \\ 0\end{pmatrix},\;
+\gamma_2=\begin{pmatrix} 0 \\ -2 \\ 0 \\ 0\end{pmatrix},\;
+\gamma_3=\begin{pmatrix} 2 \\ 0 \\ 2 \\ -2\end{pmatrix},\;
+\gamma_4=\begin{pmatrix} 0 \\ 2 \\ 0 \\ 0\end{pmatrix}
+\]
+其中 $\gamma_1$ 与 $\gamma_3$ 线性无关，故 $R(T)$ 的一组基可取为 $T(E_{11})$ 和 $T(E_{21})$。
+
+\newpage
+
+\section{第二题}\noindent
+设 $B = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$，线性空间
+\[
+V = \left\{ X=(x_{ij})_{2\times2} \mid x_{11}+x_{22} = 0,\; x_{ij}\in \mathbb{R} \right\}
+\]
+中的线性变换为 $T(X)=B^{\mathsf{T}}X - X^{\mathsf{T}}B$（$\forall X \in V$），求 $T$ 的特征值和特征向量。
+
+\textbf{解：}
+\[
+X = \begin{bmatrix} x_{11} & x_{12} \\ x_{21} & -x_{11} \end{bmatrix} = 
+x_{11}\begin{bmatrix}1 & 0 \\ 0 & -1\end{bmatrix} + 
+x_{12}\begin{bmatrix}0 & 1 \\ 0 & 0\end{bmatrix} + 
+x_{21}\begin{bmatrix}0 & 0 \\ 1 & 0\end{bmatrix}\] \\
+\[
+\text{选一组基}X_1 = \begin{bmatrix}1 & 0 \\ 0 & -1\end{bmatrix}
+X_2 = \begin{bmatrix}0 & 1 \\ 0 & 0\end{bmatrix}
+X_3 = \begin{bmatrix}0 & 0 \\ 1 & 0\end{bmatrix}
+\Rightarrow X = x_{11}X_1 + x_{12}X_2 + x_{21}X_3
+\]
+\[
+T(X)=\begin{bmatrix}1 & 0 \\ 1 & 1\end{bmatrix}
+\begin{bmatrix}x_{11} & x_{12} \\ x_{21} & x_{22}\end{bmatrix} - 
+\begin{bmatrix}x_{11} & x_{12} \\ x_{21} & x_{22}\end{bmatrix}
+\begin{bmatrix}1 & 1 \\ 0 & 1\end{bmatrix} =
+\begin{bmatrix}0 & x_{12}-x_{11}-x_{21} \\ x_{11}+x_{21}-x_{12} & 0\end{bmatrix}
+\]
+\[
+T(X_1) = \begin{bmatrix}0 & -1 \\ 1 &0\end{bmatrix}
+T(X_2) = \begin{bmatrix}0 & 1 \\ -1 &0\end{bmatrix}
+T(X_3) = \begin{bmatrix}0 & -1 \\ 1 &0\end{bmatrix}
+\]
+\[
+T(X)=AX = A\begin{bmatrix}X_1 & X_2 & X_3\end{bmatrix}\]
+\[T(X_1) = 0 · X_1 + (-1) · X_2 + 1 · X_3,
+T(X_2) = 0 · X_1 + 1 · X_2 + (-1) · X_3,
+T(X_3) = 0 · X_1 + (-1) · X_2 + 1 · X_3 \]
+\[\Rightarrow T(X) = \begin{bmatrix}0 & 0 & 0 \\ -1 & 1 & -1 \\ 1 & -1 & -1\end{bmatrix}
+\begin{bmatrix}X_1 & X_2 & X_3\end{bmatrix}\]
+
+\[\mid \lambda E - A \mid \Rightarrow \lambda_1,\lambda_2 = 0, \lambda_3 = 2,
+\alpha_1 = \begin{bmatrix}1 \\ 1 \\ 0\end{bmatrix},
+\alpha_2 = \begin{bmatrix}0 \\ 1 \\ 1\end{bmatrix},
+\alpha_3 = \begin{bmatrix}0 \\ 1 \\ -1\end{bmatrix}\] \\
+\[Y_1 = \begin{bmatrix}X_1 & X_2 & X_3\end{bmatrix}\alpha_1 = \begin{bmatrix}1 & 1 \\ 0 & -1\end{bmatrix}\]
+\[Y_2 = \begin{bmatrix}X_1 & X_2 & X_3\end{bmatrix}\alpha_2 = \begin{bmatrix}0 & 1 \\ 1 & 0\end{bmatrix}\]
+\[Y_3 = \begin{bmatrix}X_1 & X_2 & X_3\end{bmatrix}\alpha_3 = \begin{bmatrix}0 & 1 \\ -1 & 0\end{bmatrix}\]
+$T$的特征值与线性无关的特征向量为$\lambda_1$、$\lambda_2$、$\lambda_3$，$Y1$、$Y2$、$Y3$
+
+\newpage
+\section{第三题}\noindent
+计算矩阵多项式 $A^{100}+2A^{50}$，其中
+\[
+A = \begin{bmatrix}
+1 & 1 & -1 \\
+1 & 1 & 1 \\
+0 & -1 & 2
+\end{bmatrix}
+\]
+
+\textbf{解：}
+\[\mid \lambda E - A \mid= \begin{vmatrix} \lambda - 1 & -1 & 1 \\ -1 & \lambda-1 & -1 \\ 0 & 1 & \lambda-2\end{vmatrix},
+\varphi(\lambda) = (\lambda - 1)^2(\lambda - 2)\]
+令\[f(\lambda) = \varphi(\lambda)g(\lambda) + r(\lambda)\]
+\[\because r(\lambda) < 3 \therefore r(\lambda) = b_0 + b_1\lambda + b_2\lambda^2\]
+由$Hamilton-Cayloy$定理 \\
+\[\varphi(A)=0 \Rightarrow f(A) = r(A) = b_0 + b_1A + b_2A^2\]
+\[\because \varphi(\lambda_i)=0 \therefore f(\lambda_i) = r(\lambda_i)\text{且}f'(\lambda_i)=r'(\lambda_i)\]
+带入$\lambda = 2,f(2)=2^{100} + 2 · 2^{50} = r(2) = b_0 + 2b_1 + 4b_2$ \\
+带入$\lambda = 1,f(1)=1^{100} + 2 · 1^{50} = r(1) = b_0 + b_1 + b_2$ \\
+$f'(\lambda)=100\lambda^99 + 100\lambda^49, f'(1)=200 = b_1 + 2b_2$ \\
+\[\Rightarrow \begin{cases}b0 + b1 + b2 = 3 \\ b_1 + 2b_2 = 200 \\ b_0 + 2b_1 + 4b_2 = 2^{100} + 2^{51}\end{cases}
+\Rightarrow \begin{cases}b_0 = 2^{100} + 2^{51} - 400 \\ b_2 = -2^{101} - 2^{52} + 606 \\ b_2 = 2^{100} + 2^{51} - 203\end{cases}\]
+\[A^ 2 = \begin{bmatrix}2 & 3 & -2 \\ 2 & 1 & 2 \\ -1 & -3 & 3\end{bmatrix}\]
+\[f(A) = b_0 + b_1A + b_2A^2\]
+
+\newpage
+\section{第四题}\noindent
+求矩阵 $A = \begin{bmatrix}
+3 & -3 & 2 \\
+-1 & 5 & -2 \\
+-1 & 3 & 0
+\end{bmatrix}$ 的最小多项式。
+
+\textbf{解：}
+\[
+\begin{aligned}
+|\lambda I - A|
+&= \begin{vmatrix}
+\lambda-3 & 3 & -2 \\
+1 & \lambda-5 & 2 \\
+1 & -3 & \lambda
+\end{vmatrix}
+= \begin{vmatrix}
+\lambda-3 & 3 & -2 \\
+1 & \lambda-5 & 2 \\
+0 & 2-\lambda & \lambda-2
+\end{vmatrix} \\
+&= (\lambda-2) \begin{vmatrix}
+\lambda-3 & 3 & -2 \\
+1 & \lambda-5 & 2 \\
+0 & -1 & 1
+\end{vmatrix}
+= (\lambda-2) \begin{vmatrix}
+\lambda-3 & 1 & -2 \\
+1 & \lambda-3 & 2 \\
+0 & 0 & 1
+\end{vmatrix}
+= (\lambda-2) \begin{vmatrix}
+\lambda-3 & 1 \\
+1 & \lambda-3
+\end{vmatrix} \\
+&= (\lambda-2)\bigl((\lambda-3)^2-1\bigr) = (\lambda-2)(\lambda^2-6\lambda+8) \\
+&= (\lambda-2)^2(\lambda-4)
+\end{aligned}
+\]
+\[\because f_1(A) \ne O\]
+\[f_2(A) = (A - 2E)(A-4E)=O\]
+所以最小多项式为\[m(\lambda) = (\lambda-2)(\lambda-4)\]
+
+\newpage
+\section{第五题}\noindent
+设矩阵空间 $\mathbb{R}^{2\times2}$ 的子空间为
+\[
+V = \{ X = (x_{ij})_{2\times2} \mid x_{11}+x_{12}+x_{21} = 0,\; x_{ij}\in \mathbb{R} \}
+\]
+$V$ 中的线性变换为
+\[
+T(X) = X + X^{\mathsf{T}} \quad (\forall X \in V)
+\]
+求 $V$ 中的一个基，使 $T$ 在该基下的矩阵为对角矩阵。
+
+\textbf{解：}
+\[
+X = \begin{bmatrix} x_{11} & x_{12} \\ x_{21} & x_{22} \end{bmatrix}
+= \begin{bmatrix} -x_{12}-x_{21} & x_{12} \\ x_{21} & x_{22} \end{bmatrix}
+= x_{12}\begin{bmatrix} -1 & 1 \\ 0 & 0 \end{bmatrix}
++ x_{21}\begin{bmatrix} -1 & 0 \\ 1 & 0 \end{bmatrix}
++ x_{22}\begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}
+\]
+记
+\[
+X_1 = \begin{bmatrix} -1 & 1 \\ 0 & 0 \end{bmatrix},\ X_2 = \begin{bmatrix} -1 & 0 \\ 1 & 0 \end{bmatrix},\ X_3 = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}
+\]
+$X_1,X_2,X_3$ 线性无关，是 $V$ 的一组基。
+
+\[
+\begin{aligned}
+T(X_1) &= X_1 + X_1^T = \begin{bmatrix} -1 & 1 \\ 0 & 0 \end{bmatrix} + \begin{bmatrix} -1 & 0 \\ 1 & 0 \end{bmatrix} = \begin{bmatrix} -2 & 1 \\ 1 & 0 \end{bmatrix}
+= 1\cdot X_1 + 1\cdot X_2 + 0\cdot X_3, \\[4pt]
+T(X_2) &= X_2 + X_2^T = \begin{bmatrix} -1 & 0 \\ 1 & 0 \end{bmatrix} + \begin{bmatrix} -1 & 1 \\ 0 & 0 \end{bmatrix} = \begin{bmatrix} -2 & 1 \\ 1 & 0 \end{bmatrix}
+= 1\cdot X_1 + 1\cdot X_2 + 0\cdot X_3, \\[4pt]
+T(X_3) &= X_3 + X_3^T = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix} + \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix} = \begin{bmatrix} 0 & 0 \\ 0 & 2 \end{bmatrix}
+= 0\cdot X_1 + 0\cdot X_2 + 2\cdot X_3.
+\end{aligned}
+\]
+因此 $T$ 在基 $X_1,X_2,X_3$ 下的矩阵满足：
+\[
+T\begin{bmatrix} X_1 \\ X_2 \\ X_3 \end{bmatrix}
+= \begin{bmatrix} 1 & 1 & 0 \\ 1 & 1 & 0 \\ 0 & 0 & 2 \end{bmatrix}
+\begin{bmatrix} X_1 \\ X_2 \\ X_3 \end{bmatrix}
+\]
+记矩阵 $A = \begin{bmatrix} 1 & 1 & 0 \\ 1 & 1 & 0 \\ 0 & 0 & 2 \end{bmatrix}$
+
+\[
+|\lambda E - A| = \begin{vmatrix} \lambda - 1 & -1 & 0 \\ -1 & \lambda - 1 & 0 \\ 0 & 0 & \lambda - 2 \end{vmatrix}
+= \lambda(\lambda - 2)^2
+\]
+解得特征值：$\lambda_1 = 0,\ \lambda_{2,3} = 2$，对应的特征向量为：
+\[
+\alpha_1 = \begin{pmatrix} -1 \\ 1 \\ 0 \end{pmatrix},\ \alpha_2 = \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix},\ \alpha_3 = \begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix}
+\]
+因此对角矩阵与可逆矩阵为：
+\[
+\Lambda = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2 \end{bmatrix},\quad
+P = \begin{bmatrix} -1 & 1 & 0 \\ 1 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+\]
+
+\vspace{1em}
+\noindent (4) 求 $V$ 的基 $Y_1,Y_2,Y_3$：
+由 $(Y_1,Y_2,Y_3) = (X_1,X_2,X_3)P$，得：
+\[
+\begin{aligned}
+Y_1 &= -1\cdot X_1 + 1\cdot X_2 + 0\cdot X_3 = \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}, \\[4pt]
+Y_2 &= 1\cdot X_1 + 1\cdot X_2 + 0\cdot X_3 = \begin{bmatrix} -2 & 1 \\ 1 & 0 \end{bmatrix}, \\[4pt]
+Y_3 &= 0\cdot X_1 + 0\cdot X_2 + 1\cdot X_3 = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}.
+\end{aligned}
+\]
+故 $T$ 在基 $Y_1,Y_2,Y_3$ 下的矩阵为对角矩阵 $\Lambda$
+
+\newpage
+\section{第六题}\noindent
+求矩阵 $A$ 的 Jordan 标准形，其中
+\[
+A = \begin{bmatrix}
+-1 & 1 & 0 \\
+-4 & 3 & 0 \\
+1 & 0 & 2
+\end{bmatrix}
+\]
+
+\textbf{解：}
+\[
+|\lambda E - A| = 
+\begin{vmatrix}
+\lambda + 1 & -1 & 0 \\
+4 & \lambda - 3 & 0 \\
+-1 & 0 & \lambda - 2
+\end{vmatrix}
+\]
+
+\[
+D_1(\lambda) = 1
+\]
+
+因为
+\[
+\begin{vmatrix}
+4 & \lambda - 3 \\
+-1 & 0
+\end{vmatrix}
+= \lambda - 3,
+\quad
+\begin{vmatrix}
+4 & 0 \\
+-1 & \lambda - 2
+\end{vmatrix}
+= 4(\lambda - 2)
+\]
+$\lambda-3$ 和 $4(\lambda-2)$ 的最大公因式为 $1$，故
+\[
+D_2(\lambda) = 1
+\]
+
+\[
+D_3(\lambda) = (\lambda - 2)(\lambda - 1)^2
+\]
+
+因此不变因子为：
+\[
+d_1(\lambda) = 1,\quad d_2(\lambda) = 1,\quad d_3(\lambda) = (\lambda - 2)(\lambda - 1)^2
+\]
+
+$\lambda E - A$ 的所有初等因子为：
+\[
+\lambda - 2,\ (\lambda - 1)^2
+\]
+
+故 Jordan 标准形为：
+\[
+\begin{bmatrix}
+2 & 0 & 0 \\
+0 & 1 & 1 \\
+0 & 0 & 1
+\end{bmatrix}
+\]
+
+
+\newpage
+\section{第七题}\noindent
+已知 $\mathbb{R}^3$ 的线性变换 $T$ 在基 $x_1=(-1,1,1)$，$x_2=(1,0,-1)$，$x_3=(0,1,1)$ 下的矩阵是
+\[
+\begin{bmatrix}
+1 & 0 & 1 \\
+1 & 1 & 0 \\
+-1 & 2 & 1
+\end{bmatrix}
+\]
+求 $T$ 在基 $e_1=(1,0,0), e_2=(0,1,0), e_3=(0,0,1)$ 下的矩阵。\\
+\textbf{解：}
+\[
+A = \begin{bmatrix}
+1 & 1 & 0 \\
+1 & 2 & 1 \\
+-1 & 1 & 2
+\end{bmatrix}
+\]
+
+令 \( X = \{x_1, x_2, x_3\} \)，\( E = \{e_1, e_2, e_3\} \)。
+
+由 \( E = XP \)，得 \( P = X^{-1} = \begin{pmatrix}
+-1 & 1 & -1 \\
+1 & 1 & 0 \\
+0 & 0 & 1
+\end{pmatrix} \)。
+
+\[
+B = XAX^{-1} = \begin{pmatrix}
+-1 & 1 & -2 \\
+2 & \frac{1}{2} & 0 \\
+3 & 0 & 2
+\end{pmatrix}
+\]
+
+\newpage
+\section{第八题}\noindent
+给定 $\mathbb{R}^3$ 的两个基
+\[
+x_1 = (1,0,1),\; x_2 = (2,1,0),\; x_3 = (1,1,1)
+\]
+\[
+y_1 = (1,2,-1),\; y_2 = (2,2,-1),\; y_3 = (2,-1,-1)
+\]
+定义线性变换 $T x_i = y_i\;(i=1,2,3)$。
+\begin{enumerate}
+\item 写出由基 $x_1,x_2,x_3$ 到基 $y_1,y_2,y_3$ 的过渡矩阵；
+\item 写出 $T$ 在基 $x_1,x_2,x_3$ 下的矩阵；
+\item 写出 $T$ 在基 $y_1,y_2,y_3$ 下的矩阵。
+\end{enumerate}
+\textbf{解：}
+(1)
+\[
+X = \begin{pmatrix}
+1 & 2 & 1 \\
+0 & 1 & 1 \\
+1 & 0 & 1
+\end{pmatrix}, \quad
+Y = \begin{pmatrix}
+1 & 2 & 2 \\
+2 & 2 & -1 \\
+-1 & -1 & -1
+\end{pmatrix}
+\]
+\[
+XP = Y \implies P = X^{-1}Y = \begin{pmatrix}
+-2 & -\frac{3}{2} & \frac{3}{2} \\
+1 & -\frac{3}{2} & \frac{3}{2} \\
+1 & \frac{1}{2} & -\frac{5}{2}
+\end{pmatrix}
+\]
+
+(2) 令 \( T \) 在基 \( x_1,x_2,x_3 \) 下的矩阵为 \( A \)，则
+\[
+T(x_1\ x_2\ x_3) = (x_1\ x_2\ x_3)A
+\]
+由 \( T x_i = y_i \)，得
+\[
+(x_1\ x_2\ x_3)A = (y_1\ y_2\ y_3) = (x_1\ x_2\ x_3)P
+\]
+\[
+\therefore A = P = \begin{pmatrix}
+2 & -\frac{1}{2} & \frac{3}{2} \\
+1 & \frac{1}{2} & -\frac{1}{2}
+\end{pmatrix}
+\]
+
+(3) 令 \( T \) 在基 \( y_1,y_2,y_3 \) 下的矩阵为 \( B \)，则
+\[
+T(Y) = YB \implies T(XP) = T(X)P = XAP
+\]
+由 \( XP = Y \implies X = YP^{-1} \)，代入得
+\[
+T(Y) = YP^{-1}AP = YB
+\]
+\[
+\therefore B = P^{-1}AP
+\]
+\[
+\because A = P, \quad \therefore B = P
+\]
+
+\newpage
+\section{第九题}\noindent
+设 $T$ 是数域 $\mathbb{C}$ 上线性空间 $V^3$ 的线性变换，已知 $T$ 在 $V^3$ 的基 $x_1,x_2,x_3$ 下的矩阵
+\[
+A = \begin{bmatrix}
+3 & 1 & 0 \\
+-4 & -1 & 0 \\
+4 & -8 & -2
+\end{bmatrix}
+\]
+求 $T$ 的特征值与特征向量。 \\
+\textbf{解：}
+\[
+|\lambda E - A| = 
+\begin{vmatrix}
+\lambda - 3 & -1 & 0 \\
+4 & \lambda + 1 & 0 \\
+-4 & 8 & \lambda + 2
+\end{vmatrix}
+= (\lambda + 2)(\lambda - 1)^2
+\]
+\[
+\therefore \lambda_1 = -2,\ \lambda_{2,3} = 1
+\]
+
+\[
+\alpha_1 = \begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix},\quad 
+\alpha_2 = \begin{pmatrix} 3 \\ -6 \\ 20 \end{pmatrix}
+\]
+
+\newpage
+\section{第十题}\noindent
+计算 $2A^8-3A^5+A^4+A^2-4I$，其中
+\[
+A = \begin{bmatrix}
+1 & 0 & 2 \\
+0 & -1 & 1 \\
+0 & 1 & 0
+\end{bmatrix}
+\]
+\textbf{解：}
+\[
+\begin{aligned}
+f(\lambda) &= |\lambda E - A| = 
+\begin{vmatrix}
+\lambda - 1 & 0 & 2 \\
+0 & \lambda + 1 & -1 \\
+0 & -1 & \lambda
+\end{vmatrix} 
+= (\lambda - 1) \begin{vmatrix}
+\lambda + 1 & -1 \\
+-1 & \lambda
+\end{vmatrix} 
+= (\lambda - 1)(\lambda^2 + \lambda - 1) \\
+&= \lambda^3 - 2\lambda + 1
+\end{aligned}
+\]
+
+由 \text{Hamilton–Cayley} 定理，
+\[
+f(A) = A^3 - 2A + E = O \implies A^3 = 2A - E
+\]
+
+\[
+\begin{aligned}
+&\implies A^4 = 2A^2 - A \\
+&A^5 = 2A^3 - A^2 = -A^2 + 4A - 2E \\
+&A^8 = 9A^2 - 12A + 4E
+\end{aligned}
+\]
+
+\[
+2A^8 - 3A^5 + A^4 + A^2 - 4E = 24A^2 - 37A + 10E
+\]
+
+\[
+A^2 = \begin{bmatrix}
+1 & 2 & 2 \\
+0 & 2 & -1 \\
+0 & -1 & 1
+\end{bmatrix}
+\]
+
+\[
+\therefore 2A^8 - 3A^5 + A^4 + A^2 - 4E = 
+\begin{bmatrix}
+-3 & 48 & -26 \\
+0 & 95 & -61 \\
+0 & -61 & 34
+\end{bmatrix}
+\]
+
+\newpage
+\section{第十一题}\noindent
+求矩阵 $A$ 的最小多项式，其中
+\[
+A = \begin{bmatrix}
+7 & 4 & -4 \\
+4 & -8 & -1 \\
+-4 & -1 & -8
+\end{bmatrix}
+\]
+\textbf{解：}
+\[
+\begin{aligned}
+|\lambda E - A| &= \begin{vmatrix}
+\lambda - 7 & -4 & 4 \\
+-4 & \lambda + 8 & 1 \\
+4 & 1 & \lambda + 8
+\end{vmatrix}
+= \begin{vmatrix}
+\lambda - 7 & -4 & 4 \\
+-4 & \lambda + 8 & 1 \\
+0 & \lambda + 9 & \lambda + 9
+\end{vmatrix} \\
+&= (\lambda + 9) \begin{vmatrix}
+\lambda - 7 & -4 & 4 \\
+-4 & \lambda + 8 & 1 \\
+0 & 1 & 1
+\end{vmatrix}
+= (\lambda - 9)(\lambda + 9)^2
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+M_{11} &= (\lambda + 7)(\lambda + 9), & M_{12} &= -4(\lambda + 9), & M_{13} &= -4(\lambda + 9) \\
+M_{21} &= -4(\lambda + 9), & M_{22} &= (\lambda + 9)(\lambda - 8), & M_{23} &= \lambda + 9 \\
+M_{31} &= -4(\lambda + 9), & M_{32} &= \lambda + 9, & M_{33} &= (\lambda + 9)(\lambda - 8)
+\end{aligned}
+\]
+
+\[
+d(\lambda) = \lambda + 9
+\]
+
+\[
+m(\lambda) = \frac{(\lambda - 9)(\lambda + 9)^2}{\lambda + 9} = (\lambda - 9)(\lambda + 9)
+\]
+
+\newpage
+\section{第十二题}\noindent
+求矩阵 $A$ 的 Jordan 标准形，其中
+\[
+A = \begin{bmatrix}
+3 & 7 & -3 \\
+-2 & -5 & 2 \\
+-4 & -10 & 3
+\end{bmatrix}
+\]
+\textbf{解：}
+\[
+\begin{aligned}
+|\lambda E - A| &= 
+\begin{vmatrix}
+\lambda - 3 & -7 & 3 \\
+2 & \lambda + 5 & -2 \\
+4 & 10 & \lambda - 3
+\end{vmatrix}
+= 
+\begin{vmatrix}
+\lambda - 3 & -7 & 3 \\
+2 & \lambda + 5 & -2 \\
+0 & -2\lambda & \lambda + 1
+\end{vmatrix} \\[6pt]
+&= 
+\begin{vmatrix}
+2 & \lambda + 5 & -2 \\
+0 & -\lambda^2 - 2\lambda + 1 & 2\lambda \\
+0 & -2\lambda & \lambda + 1
+\end{vmatrix}
+= 2
+\begin{vmatrix}
+1 & \lambda + 5 & -2 \\
+0 & -\lambda^2 - 2\lambda + 1 & 2\lambda \\
+0 & -2\lambda & \lambda + 1
+\end{vmatrix} \\[6pt]
+&= 2
+\begin{vmatrix}
+-\lambda^2 - 2\lambda + 1 & 2\lambda \\
+-2\lambda & \lambda + 1
+\end{vmatrix}
+= 2(\lambda - 1)(\lambda^2 + 1)
+\end{aligned}
+\]
+
+\[
+\therefore \lambda = 1,\ i,\ -i
+\]
+
+\[
+\therefore J = \begin{bmatrix}
+1 & 0 & 0 \\
+0 & i & 0 \\
+0 & 0 & -i
+\end{bmatrix}
+\]
+
+\newpage
+\section{第十三题}\noindent
+在欧氏空间 $\mathbb{R}^{2\times2}$ 中，矩阵 $A$ 与 $B$ 的内积定义为 $(A,B)=\operatorname{tr}(A^{\mathsf{T}}B)$，子空间
+\[
+V = \left\{ X = \begin{bmatrix}
+x_1 & x_2 \\
+x_3 & x_4
+\end{bmatrix} \;\middle|\;
+\begin{array}{l}
+x_1 - x_4 = 0 \\
+x_2 - x_3 = 0
+\end{array} \right\}
+\]
+$V$ 中的线性变换为
+\[
+T(X) = XP + X^{\mathsf{T}} \quad (\forall X \in V),\quad P = \begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix}
+\]
+\begin{enumerate}
+\item 求 $V$ 的一个标准正交基；
+\item 验证 $T$ 是 $V$ 中的对称变换；
+\item 求 $V$ 的一个标准正交基，使 $T$ 在该基下的矩阵为对角矩阵。
+\end{enumerate}
+\textbf{解：}
+(1)
+\[
+X = \begin{bmatrix}
+x_1 & x_2 \\
+x_2 & x_1
+\end{bmatrix}
+= x_1 \begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix}
++ x_2 \begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix}
+= x_1 X_1 + x_2 X_2
+\]
+取基 \( X_1, X_2 \)，则 \( V \) 的一个标准正交基为
+\[
+e_1 = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}, \quad
+e_2 = \frac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}
+\]
+
+(2). 已知 \( X^T = X \), \( P^T = P \)，则
+\[
+\langle T(X), Y \rangle
+= \operatorname{tr}\left( (XP + X)^T Y \right)
+= \operatorname{tr}\left( (PX + X)Y \right)
+= \operatorname{tr}\left( PXY + XY \right)
+\]
+\[
+\langle X, T(Y) \rangle
+= \operatorname{tr}\left( X^T (YP + Y) \right)
+= \operatorname{tr}\left( X(YP + Y) \right)
+= \operatorname{tr}\left( XYP + XY \right)
+\]
+
+(3).
+\[
+T(e_1) = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} + \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}
+= \frac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} + \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}
+\]
+矩阵表示为
+\[
+\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}, \quad
+\lambda_1 = 2,\ \lambda_2 = 0
+\]
+特征向量
+\[
+\alpha_1 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \quad
+\alpha_2 = \begin{pmatrix} 1 \\ -1 \end{pmatrix}
+\]
+构造标准正交基
+\[
+f_1 = \frac{1}{\sqrt{2}} (e_1 + e_2), \quad
+f_2 = \frac{1}{\sqrt{2}} (e_1 - e_2)
+\]
+\[
+f_1 = \frac{1}{2} \begin{bmatrix} 1 & 1 \\ 1 & 1 \end{bmatrix}, \quad
+f_2 = \frac{1}{2} \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}
+\]
+此为 \( V \) 的一个标准正交基，\( T \) 在该基下的矩阵为
+\[
+\begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}
+\]
+
 \end{document}
