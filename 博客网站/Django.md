@@ -413,6 +413,50 @@ def login_view(request):
     return render(request, 'users/login.html')
 ```
 
+到这里我们就基本实现了博客的简单登录功能，这里实际项目的登录功能还有很大的距离，实际项目里我们要让他既支持用户名登录，又支持邮箱登录，再一个我们这个邮箱登录界面太过丑陋，下一章我们就来解决这些问题，进一步实现利用django的表单模块来完善我们登录功能。
+
+### 在Django中构建表单
+
+**通过forms.py自动生成表单**
+
+上一节我们已经知道如何使用HTML定义表单，并获取表单的数据。那么这一节我们来学习如何利用django提供的表单类来构建美单，并进行有效性验证。
+
+- 1.users下创建forms.py文件
+```python
+from django import forms
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='用户名', max_length=15)
+    password = forms.CharField(label='密码', min_length=6, widget=forms.PasswordInput())
+```
+这里定义了一个登陆框表单类，定义表单的字段类似于模型中的的字段，字段中的label标签实际生成就是表单的label标签，widget是定义表单的小部件，CharField字段的默认小部件是TextInput，意思也就是表单的类型是text文本类型，那么我们将密码这里的小部件定义为PasswordInput，它的表单类型就变成了password类。
+
+- 2.修改views.py中逻辑
+
+```python
+from django.shortcuts import render, HttpResponse
+from django.contrib.auth import authenticate, login
+from .forms import LoginForm
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm()
+    else:
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return HttpResponse('登陆成功')
+            else:
+                return HttpResponse('账号或密码错误！')
+    return render(request, 'users/login.html', {'form':form})
+```
+
+这个视图的逻辑是如果不是
+
 ## 第五章 实现用户注册功能
 
 ## 第六章 实现验证邮箱激活账户功能

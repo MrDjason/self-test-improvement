@@ -1,20 +1,19 @@
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth import authenticate, login
+from .forms import LoginForm
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        # 与数据库中的用户名和密码比对，django默认保存密码是以哈希形式存储，并不是明文密码，这里的password验证默认调用的是User类的check_password方法，以哈希值比较。
-        user = authenticate(request, username=username, password=password)
-        # 验证如果用户不为空
-        if user is not None:
-            # login方法登录
-            login(request, user)
-            # 返回登录成功信息
-            return HttpResponse('登陆成功')
-        else:
-            # 返回登录失败信息
-            return HttpResponse('登陆失败')
-
-    return render(request, 'users/login.html')
+        form = LoginForm()
+    else:
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return HttpResponse('登陆成功')
+            else:
+                return HttpResponse('账号或密码错误！')
+    return render(request, 'users/login.html', {'form':form})
