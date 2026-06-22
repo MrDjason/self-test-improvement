@@ -421,7 +421,7 @@ def login_view(request):
 
 上一节我们已经知道如何使用HTML定义表单，并获取表单的数据。那么这一节我们来学习如何利用django提供的表单类来构建美单，并进行有效性验证。
 
-- 1.users下创建forms.py文件
+- **1.users下创建forms.py文件**
 ```python
 from django import forms
 
@@ -431,7 +431,7 @@ class LoginForm(forms.Form):
 ```
 这里定义了一个登陆框表单类，定义表单的字段类似于模型中的的字段，字段中的label标签实际生成就是表单的label标签，widget是定义表单的小部件，CharField字段的默认小部件是TextInput，意思也就是表单的类型是text文本类型，那么我们将密码这里的小部件定义为PasswordInput，它的表单类型就变成了password类。
 
-- 2.修改views.py中逻辑
+- **2.修改views.py中逻辑**
 
 ```python
 from django.shortcuts import render, HttpResponse
@@ -439,7 +439,7 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginForm
 
 def login_view(request):
-    if request.method == 'POST':
+    if request.method != 'POST':
         form = LoginForm()
     else:
         form = LoginForm(request.POST)
@@ -455,9 +455,297 @@ def login_view(request):
     return render(request, 'users/login.html', {'form':form})
 ```
 
-这个视图的逻辑是如果不是
+这个视图的逻辑是如果不是POST请求则显示空表单，否则获取表单数据，并进行验证数据类型是否正确，在进行验证登录操作，这里的数据都存储在cleaned_data这个字典中，通过获取字典数据的方式可以获取数据。
+
+- **3.修改login.html中的代码**
+
+```html
+{{ form }}
+```
+
+- `{{ form.as_table }}`：将它们渲染为包裹在`<tr>`标签中的表格单元格
+- `{{ form.as_p }}`：将它们包裹在`<p>`标签中
+- `{{ form.as_ul }}`：将它们包裹在`<li>`标签中
+
+- **4.自定义验证表单**
+- 验证用户名与密码不能一致
+
+```python
+# forms.py class LoginForm(forms.Form):
+def clean_password(self)
+    username = self.cleaned_data.get('username')
+    password = self.cleaned_data.get('password')
+    if username == password:
+        raise forms.validationError('密码不能与用户名一样！')
+    return password
+```
+
+### 引入css样式
+
+引入bulma.css样式，美化登录页面  
+
+[bulma](https://bulma.io/)  
+
+users下创建static文件夹，在这个文件夹下创建一个与项目同名的文件夹users
 
 ## 第五章 实现用户注册功能
+
+> 首先大家来想一下我们以往看到别人的网站，是个什么样的流程？一般流程都是输入邮箱，用户名，密码，然后给邮箱发个激活链接，点击链接验证之后，这就算注册成功了。当然，现在的注册已经简单了，直接手机获取验证码，验证码填写正确后，在设置密码、用户名，那么我们这一章还是主要学习如何通过用户名、密码来注册，之后再来完善验证邮箱，通过邮箱完成注册逻辑。
+
+**1. 在 users/views.py 中定义一个注册的视图**
+```python
+# users/views.py
+def register(request):
+    if request.method != 'POST':
+        return HttpResponse('注册页面')
+    else:
+        return HttpResponse('POST提交页面')
+```
+
+**2. 在 users/urls.py 中定义注册页面的 url**
+```python
+path('register/', views.register, name='register'),
+```
+
+**3. 在 users/forms.py 中定义注册表单**
+> 大家要清楚一点就是，我们要注册其实就是要在数据库创建一个用户，那么我们在前边就已经知道，django 为我们提供了一个User模型，里边有用户基本的字段，那么这个表单就与我们这个User模型相关，这种情况下，此时再在表单中定义字段类型就是多余的，因为在User模型中已经定义了字段，因此，Django 提供了一个辅助类ModelForm，可以从一个 User 模型创建一个 Form 类。
+
+```python
+from django.contrib.auth.models import User
+
+class RegisterForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+```
+
+
+**4. 在users/templates/users/下创建注册页静态模板register.html**
+
+**5. 修改 users/views.py 中的注册的视图如下**
+
+下边会用到一个save()方法用来保存，其中save()方法的commit=False属性，是将验证过的数据暂时生成一个数据对象，暂存到内存，不会直接存入数据库，等用set_password()方法将明文密码转换为哈希值后，最后再存进数据库。
+
+```python
+from .forms import LoginForm, RegisterForm
+
+def register(request):
+    if request.method != 'POST':
+        form = RegisterForm()
+    else:
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            new_user = form.save(commit=False)
+            new_user.set_password(form.cleaned_data['password'])
+            new_user.save()
+            return redirect('users:login')
+    context = {'form': form}
+    return render(request, 'users/register.html', context)
+```
+
+**6. 将 users/forms.py 中的密码框设置为隐藏，并让在注册时输入两次密码，进行比对验证。**
+
+```python
+class RegisterForm(forms.ModelForm):
+    password = forms.CharField(label='密码', min_length=6,
+widget=forms.PasswordInput(attrs={
+    'class': 'input', 'placeholder': '密码'}))
+    password1 = forms.CharField(label='再次密码', min_length=6,
+widget=forms.PasswordInput(attrs={
+    'class': 'input', 'placeholder': '再次密码'}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        exists = User.objects.filter(username=username).exists()
+        if exists:
+            raise forms.ValidationError("用户名已经存在！")
+        return username
+
+    def clean_password1(self):
+        data = self.cleaned_data
+        password = data['password']
+        password1 = data['password1']
+        if password != password1:
+            raise forms.ValidationError('两次输入的密码不一致，请修改！')
+        return password
+```
+
+### 实现邮箱登录功能
+
+上一章节我们已经实现了利用用户名注册登录功能，这一章我们来学习如何使用邮箱注册。
+
+**1. 在 users/views.py 中引入以下两个方法**
+
+```python
+from django.contrib.auth.backends import ModelBackend
+from django.db.models import Q
+```
+
+ModelBackend是Django使用的默认身份验证后端，我们将重写这个类让他支持验证邮箱，它实现了两个必要的方法：`get_user(user_id)` 和 `authenticate(request, **credentials)`，以及其它一系列可选的权限相关的方法，具体我们可以去看官方文档或者直接查看源码。
+
+Q方法可参考我的头条文章：如何在Django ORM中进行 or、and、not查询？  
+`Q` 对象能通过 `&` 和 `|` 操作符连接起来。当操作符被用于两个 Q 对象之间时会生成一个新的 `Q` 对象。
+
+**2. 在 users/views.py 中创建MyBackend类**
+
+```python
+class MyBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None):
+        try:
+            user = User.objects.get(Q(username=username)|Q(email=username))
+            if user.check_password(password):  # 加密明文密码
+                return user
+        except Exception as e:
+            return None
+```
+
+**3. 在MyBlog/settings.py中引入AUTHENTICATION_BACKENDS**
+
+```python
+AUTHENTICATION_BACKENDS = (
+    'users.views.MyBackend',
+)
+```
+
+经过这几步简单的配置我们就实现了使用邮箱登录功能。
+
+### 实现使用邮箱注册功能
+
+**1. 修改users/views.py中的注册视图register，在保存过程中设置用户名等于邮箱即可**
+
+```python
+def register(request):
+    """注册视图"""
+    if request.method != 'POST':
+        form = RegisterForm()
+    else:
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            new_user = form.save(commit=False)
+            new_user.set_password(form.cleaned_data.get('password'))
+            # 让username等于邮箱即可
+            new_user.username = form.cleaned_data.get('email')
+            new_user.save()
+            return HttpResponse('注册成功')
+    context = {'form': form}
+    return render(request, 'users/register.html', context)
+```
+
+**2. 修改users/forms.py中的RegisterForm表单如下**
+
+```python
+class RegisterForm(forms.ModelForm):
+    '''注册表单'''
+    email = forms.EmailField(label='邮箱', min_length=3, widget=forms.EmailInput(attrs={
+        'class': 'input', 'placeholder': '邮箱'
+    }))
+    password = forms.CharField(label='密码', min_length=6, widget=forms.PasswordInput(attrs={
+        'class': 'input', 'placeholder': '密码'}))
+    password1 = forms.CharField(label='再次输入密码', min_length=6, widget=forms.PasswordInput(attrs={
+        'class': 'input', 'placeholder': '再次输入密码'})
+
+    class Meta:
+        model = User
+        fields = ('email', 'password')
+
+    def clean_email(self):
+        ''' 验证用户是否存在 '''
+        email = self.cleaned_data.get('email')
+        exists = User.objects.filter(email=email).exists()
+        if exists:
+            raise forms.ValidationError('邮箱已经存在！')
+        return email
+
+    def clean_password1(self):
+        '''验证密码是否相等'''
+        if self.cleaned_data['password'] != self.cleaned_data   ['password1']:
+            raise forms.ValidationError('两次密码输入不一致！')
+        return self.cleaned_data['password1']
+```
+
+这里我们将username表单变为email表单字段，将验证用户名是否存在修改为验证邮箱是否存在。
+
+### 实现注册发送激活链接到邮箱，激活用户
+上一章节我们已经实现了利用邮箱注册登录功能，那么这一章就正式学习如何向邮箱发送激活邮件，并激活用户。
+
+**1. 在users/models.py中创建验证码字段**
+
+```python
+from django.db import models
+class EmailVerifyRecord(models.Model):
+    '''邮箱验证记录'''
+    SEND_TYPE_CHOICES = (
+        ('register', '注册'),
+        ('forget', '找回密码'),
+    )
+
+    code = models.CharField('验证码', max_length=20)
+    email = models.EmailField('邮箱', max_length=50)
+    send_type = models.CharField(choices=SEND_TYPE_CHOICES, max_length=10, default='register')
+    send_time = models.DateTimeField('时间', auto_now_add=True)
+
+    class Meta:
+        verbose_name = '邮箱验证码'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.code
+```
+
+- 激活虚拟环境，终端运行 makemigrations 生成数据迁移表
+```bash
+python manage.py makemigrations
+```
+
+- 运行migrate命令写入数据库
+```python
+
+```
+
+**2.**
+
+**3. 在 users 的同级目录创建一个 utils 文件夹，再在其内部创建一个 __init__.py 文件**
+
+```
+# 目录结构
+users/
+utils/__init__.py
+```
+
+**4. 在utils目录下创建一个email_send.py的文件，实现生成验证码的逻辑方法**
+
+```python
+from users.models import EmailVerifyRecord
+from django.core.mail import send_mail
+import random
+import string
+```
+
+首先我们在 `email_send.py` 中引入了以上三个方法:
+- `EmailVerifyRecord`是我们创建邮箱验证记录的类。
+- `send_mail`是django默认为我们封装的邮件发送方法，这个封装方法可以加快邮件的发送，也可以在开发时测试发送邮件，在不支持SMTP的平台上支持发送邮件。
+- random是python提供的模块，生成随机字符串
+- string是python提供的字符串模块，这里用来生成字符串
+
+```python
+# 这是send_mail方法的一些参数
+send_mail(subject, message, from_email, recipient_list,
+          fail_silently=False, auth_user=None, auth_password=None,
+          connection=None, html_message=None):
+```
+
+在大多数情况下，我们都可以使用 `django.core.mail.send_mail()` 来发送邮件。
+其中参数 `subject`, `message`, `from_email` 和 `recipient_list` 是必须的。
+- `subject`: 一个字符串。
+- `message`: 一个字符串。
+- `from_email`: 一个字符串。
+- `recipient_list`: 一个字符串列表，每项都是一个邮箱地址。
+- `fail_silently`: 一个布尔值。若为 `False`，`send_mail()` 会在发生错误时抛 `smtplib.SMTPException`。
+- `auth_user`: 可选的用户名，用于验证登陆 SMTP 服务器。若未提供，Django 会使用 `EMAIL_HOST_USER` 指定的值。
 
 ## 第六章 实现验证邮箱激活账户功能
 

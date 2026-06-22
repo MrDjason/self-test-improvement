@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-from .models import UserProfile # 引入定义的模型
+from .models import UserProfile, EmailVeriftRecord # 引入定义的模型
 
 # 必须先通过unregister将User取消注册
 admin.site.unregister(User)
@@ -17,3 +17,8 @@ class UserProfileAdmin(UserAdmin):
 
 # 重新注册User
 admin.site.register(User, UserProfileAdmin)
+
+@admin.register(EmailVeriftRecord)
+class Admin(admin.ModelAdmin):
+    '''Admin View for'''
+    list_display = ('code',)
