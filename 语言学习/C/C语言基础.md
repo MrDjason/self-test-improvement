@@ -1580,9 +1580,11 @@ int method2(int num1, int num2);
 
 int main()
 {
+    // 1.定义指针指向两个函数
     void (*p1)() = method1;
     int (*p2)(int, int) = method2;
 
+    // 2.利用函数指针去调用函数
     p1();
     int num = p2(10, 20);
     printf("%d\n", num);
@@ -1657,3 +1659,193 @@ int div(int num1, int num2)
 ```
 
 ## 字符串
+
+### 1.字符串的两种定义方式与底层细节
+
+```c
+// 正式的定义方式
+char str[4] = {'a', 'b', 'c', '\0'}; // 太麻烦了
+
+char str[4] = "abc";
+
+char* str = "abc"; 
+```
+**`char str[4] = "abc"`**
+- 细节1:底层实际存储的时候,会将字符串abc转换成字符数组并在结尾加上'\0'
+- 细节2:数组长度如若要写,需要将结束标记空间预留
+- 细节3:字符数组+双引号如上定义的字符串,内容是可以发生改变的
+
+**`char* str2="abcd"`**
+- 细节1:底层实际存储的时候,会将字符串abcd转换成字符数组并在结尾加上'\0'
+- 细节2:利用指针+双引号的方式定义字符串,会把底层的字符数组放在只读常量区
+  - 只读常量区内容不可以修改
+  - 只读常量区里面定义字符串可以复用
+    - 在创建abcd的时候会检查只读常量区里有没有abcd,如果没有才会创建新的,如果有则复用
+
+### 2. 遍历键盘录入字符串
+
+
+```c
+#include<stdio.h>
+
+int main() 
+{
+	char str[100];
+
+	printf("请录入一个字符串\n");
+	scanf("%s", str); // str作为数组,编译器会自动将str转为char*类型,等值于&str[0]
+	printf("接收到的字符串为:%s\n", str);
+
+	char* p = str;
+	while (1)
+	{
+		char c = *p;
+		if (c == '\0')
+		{
+			break;
+		}
+		printf("%c\n", c);
+		p++;
+	}
+		
+
+	return 0; 
+}
+```
+
+### 字符串数组
+
+```c
+#include<stdio.h>
+
+int main() 
+{
+	char strArr[5][100] =
+	{
+		"zhang3",
+		"zhang4",
+		"zhang5",
+		"zhang6",
+		"zhang7"
+	};
+
+	// 遍历二维数组方式一
+	for (int i = 0; i < 5; i++)
+	{
+		char* str = strArr[i]; // 只能赋值给指针
+		// char str[100] = strArr[i]会报错,必须char str[100] = {strArr[i]}
+		printf("%s\n", str);
+	}
+
+	// 遍历二维数组方式二
+	// 将五个字符串的指针放入一个数组中
+
+	char* strArr2[5] =
+	{
+		"zhang3",
+		"zhang4",
+		"zhang5",
+		"zhang6",
+		"zhang7"
+	};
+
+
+	for (int i = 0; i < 5; i++)
+	{
+		char* str = strArr[i];
+		printf("%s\n", str);
+	}
+	return 0;
+}
+```
+
+### 字符串常见函数
+
+- **strlen**:获取字符串的长度
+  - 细节1:`strlen`再统计长度不计入结束标记
+  - 细节2:一个中文占据2个字节
+- **strcat**:拼接两个字符串
+  - 细节1:`strcat(str1, str2)`将第二个字符串追加到第一个字符串末尾
+    - 前提:第一个字符串可修改且具备足够长度字符串
+- **strcpy**:复制字符串
+  - 细节1:`strcat(str1, str2)`将第二个字符串`覆盖`第一个字符串
+    - 前提:第一个字符串可修改
+- **strcmp**:比较两个字符串
+  - 完全一样:0,不一样:非0
+  - 细节1:比较时需要顺序和内容完全一致
+- **strlwr**:将字符串变成小写
+- **strupr**:将字符串变成大写
+
+## 结构体
+
+### 1.结构体
+
+**结构体**:自定义的数据类型,由很多数据组合成的一个整体,每一个数据都是结构体的成员
+**书写位置**:
+- 函数内:局部位置,只能在本函数中使用
+- 函数外:全局位置,在所有函数中使用
+
+```c
+struct 结构体名字
+{
+    成员1;
+    成员2;
+    ...
+}; 
+
+struct 结构体名字 名字1;
+struct 结构体名字 名字2;
+...
+```
+
+### 2.结构体数组
+
+```c
+struct Student
+{
+    char name[100];
+    int age;
+}
+
+int main()
+{
+    struct Student stu1 = { "zhangsan", 23 };
+    struct Student stu2 = { "lisi", 24 };
+    struct Student stu3 = { "wangwu", 26};
+
+    struct Student stuarr[3] = {stu1, stu2, stu3};
+
+    for (int i = 0; i<3; i++)
+    {
+        struct Student temp = stuarr[i];
+        printf("学生的信息为:姓名%s,年龄%d", temp.name, temp.age);
+
+    }
+}
+```
+
+### 3.起别名
+
+```c
+typedef struct girlfriend
+{
+    成员1;
+    成员2;
+    ...
+}别名;
+
+// 或者
+
+typedef struct // 省去大名
+{
+    成员1;
+    成员2;
+    ...
+}别名;
+
+别名 变量 = {...};
+```
+
+**函数用到结构体,他的申明就必须写在结构体下方,否则代码会报错**
+
+### 3.结构体作为函数参数传递
