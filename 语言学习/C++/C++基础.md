@@ -1001,10 +1001,10 @@ int main()
 ### 6.7 函数的分文件编写
 **作用**：让代码结构更加清晰  
 函数分文件编写一般有4个步骤  
-1.创建后缀名为.h的头文件  
-2.创建后缀名为.cpp的源文件  
-3.在头文件中写函数的声明  
-4.在源文件中写函数的定义  
+- 1.创建后缀名为.h的头文件  
+- 2.创建后缀名为.cpp的源文件  
+- 3.在头文件中写函数的声明  
+- 4.在源文件中写函数的定义  
 
 示例  
 
@@ -1013,15 +1013,77 @@ int main()
 #include<iostream>
 using namespace std;
 
-//实现两个数字交换的函数声明
+// 实现两个数字交换的函数声明
 void swap(int a, int b)
 ```
 
 ```cpp
 // swap.cpp文件
+#include "swap.h"
+// 定义函数
+void swap(int a, int b)
+{
+    int temp = a;
+    a = b;
+    b = temp;
 
+    cout << "a = " << a << endl;
+    cout << "b = " << b << endl;
+}
+```
+
+```cpp
+// main函数
+#include <iostream>
+using namespace std;
+#include"swap.h"
+
+int main()
+{
+    int a = 10;
+    int b = 20;
+    swap(a, b);
+    return 0;
+}
 ```
 
 ## 7.指针
+
+## 7.1 指针的基本概念
+
+**指针的作用**:可以通过指针间接访问内存
+- 内存一般从0开始记录,一般用十六进制数字表示
+- 可以利用指针变量保存地址
+
+## 7.2 指针变量的定义和使用
+
+指针变量定义语法:`数据类型* 变量名;`  
+
+**定义指针**:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+
+int main()
+{
+	int a = 10;
+	int* p = &a;
+
+	cout << "a的地址为:" << &a << endl;
+	cout << "指针p为" << p << endl;
+
+	*p = 1000; // 找到 p 存储的地址，然后去操作数据
+	cout << "a = " << a << endl;   // 1000
+	cout << "*p = " << *p << endl; // 1000
+}
+```
+
+### 7.3指针所占内存空间
+
+> 32位系统占4个字节,64位系统占8个字节
+
+
 
 ## 8.结构体

@@ -365,6 +365,8 @@ int main()
 }
 ```
 
+---
+
 ## 运算符
 
 ### 1.算数运算符
@@ -537,6 +539,8 @@ printf("%d\n", (i=3, ++i, i++ i+5));
 - 一元（自增自减正负） > 二元（加减乘除、关系运算符
 、逻辑与或） > 三元（三元运算符）
 - && > || > 赋值
+
+---
 
 ## 流程控制
 
@@ -724,6 +728,8 @@ int main()
 // 1\n 2\n 3\n 4\n 5\n
 ```
 
+---
+
 ## 循环高级
 
 ### 1.无限循环
@@ -799,6 +805,8 @@ a:
     return 0;
 }
 ```
+
+---
 
 ## 函数
 
@@ -961,6 +969,8 @@ int num = rand() % 100 + 1 // 余数在[0, 99]，加一则[1, 100]
 ### 12.练习
 略
 
+---
+
 ## 数组
 
 ### 1.什么是数组
@@ -1084,6 +1094,8 @@ int main()
 **最小索引：0，最大索引：长度-1**  
 
 ### 9.10.11.12.13.14.15.16.17.18.19.
+
+---
 
 ## 指针
 
@@ -1250,6 +1262,8 @@ int getRemainder(int num1, int num2, int *res)
     return 0;
 }
 ```
+
+---
 
 ## 高级指针
 
@@ -1658,6 +1672,8 @@ int div(int num1, int num2)
 }
 ```
 
+---
+
 ## 字符串
 
 ### 1.字符串的两种定义方式与底层细节
@@ -1776,6 +1792,8 @@ int main()
 - **strlwr**:将字符串变成小写
 - **strupr**:将字符串变成大写
 
+---
+
 ## 结构体
 
 ### 1.结构体
@@ -1849,3 +1867,473 @@ typedef struct // 省去大名
 **函数用到结构体,他的申明就必须写在结构体下方,否则代码会报错**
 
 ### 3.结构体作为函数参数传递
+
+```c
+#include<stdio.h>
+#include<string.h>
+
+
+typedef struct student
+{
+	char name[100];
+	int age;
+}S;
+
+// 细节:这个函数用到了结构体,所以函数的声明必须写在结构体下面
+void method(S* st);
+
+int main()
+{
+	// 定义一个学生
+	S stu;
+
+	// 赋予初始值
+	strcpy(stu.name, "aaa");
+	stu.age = 0;
+
+	// 打印
+	printf("学生的初始数据为:%s,%d\n", stu.name, stu.age);
+
+	// 调用函数修改学生中的数据
+	method(&stu);
+
+	// 输出打印
+	printf("学生的信息修改为:%s, %d\n", stu.name, stu.age);
+
+	return 0;
+}
+
+// 细节:
+// 1.如果函数中写的是结构体变量,相当于定义了一个新的变量
+// 2.此时把main函数中stu中的数据,传递给了method函数,并把stu中的数据赋值给了新变量st
+// 3.我们在函数中,仅仅是修改了变量st中的值,对main函数中stu的值没有进行修改
+
+void method(S* st)
+{
+	printf("接收到main函数中学生的初始数据为:%s,%d\n", (*st).name, (*st).age);
+
+	printf("请输入要修改的学生名字\n");
+	scanf("%s", (*st).name);
+
+	printf("请输入要修改的学生年龄\n");
+	scanf("%d", &((*st).age));
+
+	printf("在method函数中修改之后,学生的信息为:%s, %d\n", (*st).name, (*st).age);
+}
+```
+
+### 4.结构体嵌套
+
+```c
+#include<stdio.h>
+#include <string.h>
+
+typedef struct Message
+{
+	char phone[12];
+	char mail[100];
+}
+msg;
+
+
+typedef struct Student
+{
+	char name[100];
+	int age;
+	char gender;
+	double height;
+	msg msg;
+}
+stu;
+
+
+int main()
+{
+	/*
+	定义一个结构体表示学生student
+	student成员如下:
+	名字\年龄\性别\身高\联系方式
+	联系方式Message也是一个结构体,成员如下:
+	手机号\电子邮箱
+	*/
+
+	// 定义学生类型变量
+	stu stu1;
+	// 给里面每一个成员进行赋值
+	strcpy(stu1.name, "zhangsan");
+	stu1.age = 23;
+	stu1.gender = 'M';
+	stu1.height = 1.78;
+
+	strcpy(stu1.msg.phone, "12345678901");
+	strcpy(stu1.msg.mail, "123456@qq.com");
+	// 打印
+	printf("学生的信息如下\n");
+	printf("姓名为:%s\n", stu1.name);
+	printf("年龄为:%d\n", stu1.age);
+	printf("性别为:%c\n", stu1.gender);
+	printf("身高为:%lf\n", stu1.height);
+	printf("手机号为:%s\n", stu1.msg.phone);
+	printf("邮箱为:%s\n", stu1.msg.mail);
+
+	printf("-----------------------------------------------------");
+
+	stu stu2 = { "lisi", 24, 'F', 1.65, {"12345678901", "123456@qq.com"} };
+	printf("学生的信息如下\n");
+	printf("姓名为:%s\n", stu2.name);
+	printf("年龄为:%d\n", stu2.age);
+	printf("性别为:%c\n", stu2.gender);
+	printf("身高为:%lf\n", stu2.height);
+	printf("手机号为:%s\n", stu2.msg.phone);
+	printf("邮箱为:%s\n", stu2.msg.mail);
+}
+```
+
+### 5.结构体内存对齐
+
+```c
+struct num
+{
+    double a; // 8
+    char b;   // 1
+    int c;    // 4
+    char d;   // 1
+}
+```
+
+> 共占用24个字节
+
+**结构体内存对齐**
+
+- **确定变量位置**:只能放在自己类型整数倍的内存地址上
+
+|内存地址|存放数据|
+|:---:|:---:|
+|0|a|
+|1|a|
+|2|a|
+|3|a|
+|4|a|
+|5|a|
+|6|a|
+|7|a|
+|8|b|
+|9||
+|10||
+|11||
+|12|c|
+|13|c|
+|14|c|
+|15|c|
+|16|d|
+|17||
+
+> 其中0是a(8位)整数倍内存地址,8是b(1位)整数倍内存地址,9不是c(4位)整数倍内存地址,4位整数倍内存地址最近为12,所以调整到12.16是d(1位)整数倍内存地址
+
+- **最后一位补位**:结构体的总大小,是最大类型的整数倍
+
+> 最大类型是double a,8位.所以结构体的总大小是8的整数倍,则结构体总大小应为24
+
+#### 内存对齐
+
+不管是结构体还是普通的变量都存在内存对齐.  
+内存对齐的意思是只能放在自己类型整数倍的内存地址上,可以理解为`内存地址 / 占用字节 = 结果可以整除`
+
+---
+## 共同体
+
+**特点**:一个数据可能有多个类型
+
+```c
+union Money
+{
+    double mond;
+    int moni;
+    char mons;
+};
+
+union Money m;
+m.moneyi = 100;
+printf("%d\n", n.moneyi);
+```
+
+### 1.共用体的特点
+
+**共用体特点**
+
+- 所有成员共享同一块内存
+- 所占内存大小=最大成员的长度(也受内存对齐影响)
+- 每次只能给一个变量进行赋值,因为第二次赋值时会覆盖原有数据
+
+### 2.共同体和结构体的区别
+
+**结构体**:一种事务包含多个属性
+**共用体**:一个属性有多种类型
+
+**结构体和共用体的区别**
+
+- **存储方式**
+  - 结构体:各存各的
+  - 共同体:存一起,多次存会覆盖
+
+- **内存占用**
+  - 结构体:各个变量的综合(受内存对齐影响)
+  - 共同体:最大类型(收内存对齐影响)
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+union MoneyType
+{
+	int moneyi;
+	double moneyd;
+	char moneystr[100];
+};
+
+int main()
+{
+	// 利用共同体定义钱的变量
+	union MoneyType money;
+
+	// 赋值
+	money.moneyi = 99999;
+	money.moneyd = 123.32;
+	strcpy(money.moneystr, "100万");
+
+
+	// 整数moneyi小数moneyd字符串moneystr
+	printf("%d\n", money.moneyi);
+	printf("%lf\n", money.moneyd);
+	printf("%s\n", money.moneystr);
+
+	return 0;
+}
+```
+
+---
+
+## 动态分配内存
+
+### 1.常用函数
+
+| 函数名 | 全部单词 | 作用 |
+| ---- | ---- | ---- |
+| malloc | memory allocation | 申请空间（连续） |
+| calloc | contiguous allocation | 申请空间 + 数据初始化 |
+| realloc | re‑allocation | 修改空间大小 |
+| free | free | 释放空间 |
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+	/*
+		malloc 申请空间
+		calloc 申请空间+初始化
+		relloc 修改空间大小
+		free 释放空间
+		stdlib.h
+	*/
+
+	 // 用malloc申请一片连续空间
+	malloc(10);
+
+	// 申请10个int类型整数
+	// int* p = malloc(10 * sizeof(int)); // malloc返回这个空间的首地址
+	int* p = calloc(10, sizeof(int));
+
+	// 赋值
+	for (int i = 0; i < 10; i++)
+	{
+		// 第一种赋值方式
+		// *(p + i) = (i + 1) * 10; 
+		// 第二种赋值方式
+		p[i] = (i + 1) * 10;
+
+	}
+	// 扩容,20个int类型整数
+	int* pp = realloc(p, 20 * sizeof(int));
+
+	for (int i = 0; i < 20; i++)
+	{
+		printf("%d\n", *(pp + i));
+	}
+
+	// 释放
+	free(pp);
+
+	return 0;
+}
+```
+
+### 2.malloc\calloc\realloc\free细节
+
+**细节**
+
+- 1.malloc创建控件的单位是字节
+- 2.malloc返回的是void类型的指针,没有步长的概念,也无法获取空间中的数据,需要强转
+  - int* p = (int*)malloc...
+    - malloc 返回的是“无类型”的 void*。加上 (int*) 主要是为了兼容 C++ 编译器
+    - int* p决定“步长”和“如何解析数据”。它告诉编译器：p 指向的是 int 类型。
+- 3.malloc返回的仅仅是首地址,没有总大小,最好定义一个变量记录总大小
+- 4.malloc申请的空间不会自动消失,如果不能正确释放,会导致内存泄漏
+- 5.malloc申请的空间过多,会产生虚拟内存
+- 6.malloc申请的空间没有初始化值,需要现做赋值才能使用
+- 7.free释放完空间之后,空间中数据叫做脏数据,可能会清空或者改为其他值
+- 8.calloc就是在malloc基础上多做一个初始化动作
+- 9.realloc修改之后的空间,地址值可能发生变化,也有可能不会改变,但是原本的数据不会丢失
+- 10.realloc修改之后,无需释放原来的空间,函数底层会进行处理
+
+### 3.C语言内存结构
+
+| 内存分区 | 存放内容 | 特点说明 |
+|---|---|---|
+| **栈(stack)** | 局部变量、局部数组、函数形参 | 函数运行的区域；函数调用结束自动释放，系统自动管理，无需手动free；空间较小 |
+| **堆(heap)** | `malloc` / `calloc` / `realloc`申请的内存 | 手动申请、手动`free`释放；程序员全权管理；空间大，忘记释放会造成**内存泄漏** |
+| 初始化静态区 | 已初始化全局变量、已初始化`static`静态变量 | 程序整个生命周期有效，程序结束由系统回收 |
+| 未初始化静态区(BSS段) | 未初始化全局变量、未初始化`static`静态变量 | 程序启动时自动置0，程序整个生命周期有效 |
+| **常量区** | 字符串字面量、const常量 | 只读，不能修改；修改会直接程序崩溃；程序结束回收 |
+| **代码区** | 程序编译后的二进制机器指令 | 存放运行时代码，只读，不允许写操作 |
+
+## C语言操作文件
+
+- 程序←文件 输入
+- 程序→文件 输出
+
+### 1.路径
+
+- 绝对路径
+  - 以盘符开始,如`C:\aaa\a.txt`
+- 相对路径
+  - 以当前项目路径为参照物,如`aaa\a.txt `
+
+### 2.转义字符
+
+- `\`:转义字符,改变了后面那个字符原本的含义
+
+### 3.利用fgetc-fgets-fread一次读一个字节\一行数据\多个字节
+
+**读取数据**:将本地文件中的数据读取到程序中来
+
+**书写步骤**:
+- 打开文件
+  - `fopen`
+- 读数据
+  - `fgetc`
+  - `fgets`
+  - `fread`
+- 关闭文件
+  - `fclose`
+
+**文件读写模式**
+
+| 模式 | 描述 |
+| ---- | ---- |
+| r | 只读模式 |
+| w | 只写模式<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，清空文件 |
+| a | 追加写出模式<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，不清空文件，续写 |
+| rb | 只读模式（操作二进制文件） |
+| wb | 只写模式（操作二进制文件）<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，清空文件 |
+| ab | 追加写出模式（操作二进制文件）<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，不清空文件，续写 |
+
+
+### 4.三种读取数据的方式
+
+- `fgetc`
+```c
+#include<stdio.h>
+int main() 
+{
+	// 1.打开文件
+	FILE* file = fopen("C:\\Users\\13218\\Desktop\\test.txt", "r");
+	
+	// 2.读取数据
+	int c;
+	while ((c=fgetc(file)) != -1)
+	{
+		printf("%c", c);
+	}
+
+	// 3.关闭文件
+	fclose(file);
+	return 0;
+}
+```
+
+- `fgets`
+  - 每次读取一行,以换行符为准
+
+```c
+#include<stdio.h>
+int main() 
+{
+	// 1.打开文件
+	FILE* file = fopen("C:\\Users\\13218\\Desktop\\test.txt", "r");
+	
+	// 2.读取数据
+	char arr[1024];
+	char* str = fgets(arr, 1024, file);
+	printf("%s\n", arr);
+	printf("%s\n", str); // 用arr和str接收一样的
+
+	// 读取多行
+	char* str1 = fgets(arr, 1024, file);
+	printf("%s\n", str1);
+	char* str2 = fgets(arr, 1024, file);
+	printf("%s\n", str2);
+	// 3.关闭文件
+	fclose(file);
+	return 0;
+}
+```
+
+- `fread`
+  - 在读取时每次尽可能将数组装满,返回当前读取到的有效字节个数
+
+```c
+#include<stdio.h>
+int main() 
+{
+	// 1.打开文件
+	FILE* file = fopen("C:\\Users\\13218\\Desktop\\test.txt", "r");
+	
+	// 2.读取数据
+	char arr[1024];
+	int n = fread(arr, 1, 1024, file); // 有多少字节
+	printf("%d\n", n);
+	printf("%s\n", arr);
+
+	// 3.关闭文件
+	fclose(file);
+	return 0;
+}
+```
+
+### 5.三种写出数据的方式
+
+**写出数据**:将程序中的数据,写到本地文件中永久存储
+
+**书写步骤**:
+- 打开文件
+  - `fopen`
+- 读数据
+  - `fputc`
+  - `fputs`
+  - `fwrite`
+- 关闭文件
+  - `fclose`
+
+
+### 6.文件的读写模式
+
+| 模式 | 描述 |
+| --- | --- |
+| r+ | 允许读和写 |
+| w+ | 允许读和写<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，清空文件 |
+| a+ | 允许读和追加写<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，不清空文件，续写 |
+| r+b/rb+ | 允许读和写（操作二进制文件） |
+| w+b/wb+ | 允许读和写（操作二进制文件）<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，清空文件 |
+| a+b/ab+ | 允许读和追加写（操作二进制文件）<br>细节1：文件不存在，创建新文件<br>细节2：文件已存在，不清空文件，续写 |
