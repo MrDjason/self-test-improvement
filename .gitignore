@@ -1,15 +1,7 @@
 .venv/
-Deep_Learning/Rethink_Fun/res/mnist_train.csv
-Deep_Learning/Rethink_Fun/res/mnist_test.csv
-Deep_Learning/Rethink_Fun/res/PetImages/
-读书/
-周报.md
-Godot/
-供浆泵/
-Machine_Learning/res
-作业/
-Python/Project/Shop/res/原型/
-Python/Project/Shop/res/
-Deep_Learning/Deep Learning with Python and PyTorch/data/
+人工智能/Deep_Learning/Rethink_Fun/res
+人工智能/Machine_Learning/res/
+语言学习/Python/Project/Pandas_Advanced_Exercise
+人工智能/Deep_Learning/Deep Learning with Python and PyTorch/data
 项目/
 学习计划.html
